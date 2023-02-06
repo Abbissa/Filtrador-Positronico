@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.IntStream;
@@ -39,15 +40,16 @@ public class CreateImageFileFromGraphicsObject {
     private static double phi = 0.01; // sharpness of black and white transition
 
     public static void main(String[] args) throws IOException {
-        String FILENAME = createDirs(FILE_DEST_FOLDER + "\\" + FILE);
-        BufferedImage bf = javax.imageio.ImageIO.read(new File(FILE_FOLDER + "\\" + FILE));
+
+        String FILENAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE).toString());
+        BufferedImage bf = javax.imageio.ImageIO.read(Path.of(FILE_FOLDER, FILE).toFile());
 
         BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         // blur1(bf, res);
         // blur2(bf, res);
         contour(bf, res);
-        
+
         long init = System.nanoTime();
         BufferedImage a = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         gaussianBlur(bf, a, variance, radius);
@@ -336,11 +338,11 @@ public class CreateImageFileFromGraphicsObject {
 
     private static String createDirs(String string) {
         String FILENAME = FILE.split("\\.")[0];
-        File dir = new File(FILE_DEST_FOLDER + "\\" + FILENAME);
+        File dir = Path.of(FILE_DEST_FOLDER, FILENAME).toFile();
         if (!dir.isDirectory()) {
             dir.mkdirs();
         }
-        dir = new File(FILE_DEST_FOLDER + "\\" + FILENAME + "\\diff");
+        dir = Path.of(FILE_DEST_FOLDER, FILENAME, "diff").toFile();
         if (!dir.isDirectory()) {
             dir.mkdirs();
         }
@@ -349,14 +351,13 @@ public class CreateImageFileFromGraphicsObject {
 
     private static void saveImage(String FILENAME, BufferedImage res) throws IOException {
         int n = 0;
-        try (Scanner sc = new Scanner(new FileInputStream(".config\\n.txt"))) {
+        try (Scanner sc = new Scanner(new FileInputStream(Path.of(".config", "n.txt").toString()))) {
             n = sc.nextInt();
-            File file = new File(FILE_DEST_FOLDER + "\\" +
-                    FILENAME + "\\" + n + ".jpg");
+            File file = Path.of(FILE_DEST_FOLDER, FILENAME, n + ".jpg").toFile();
             ImageIO.write(res, "jpg", file);
 
         }
-        try (PrintWriter pw = new PrintWriter(new FileWriter(".config\\n.txt"))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(".config", "n.txt").toString()))) {
             pw.println(n + 1);
         }
     }
