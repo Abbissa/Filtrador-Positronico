@@ -1,13 +1,11 @@
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 
@@ -17,14 +15,16 @@ public class CreateImageFileFromGraphicsObject {
     private static final int R_DIFF = 10;
     private static final int SALTO = 1;
 
-    private static final String FILE = "imagen1.jpg";
     private static final String FILE_FOLDER = "sourceImg";
     private static final String FILE_DEST_FOLDER = "generatedImg";
-
+    
     private static final int R_SHUFFLE = 50;
-
+    
     private static final int BATCH_SIZE = 4;
+    
+    private static String FILE;
 
+    //Parameters
     private static double variance = 0.6;
     private static double variance_scalar = 1.6;
 
@@ -41,39 +41,49 @@ public class CreateImageFileFromGraphicsObject {
 
     public static void main(String[] args) throws IOException {
 
-        String FILENAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE).toString());
-        BufferedImage bf = javax.imageio.ImageIO.read(Path.of(FILE_FOLDER, FILE).toFile());
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Bienvenido al filtrador positrónico. Este programa recibe una imagen de la carpeta sourceImg y la procesa.");
+        System.out.print("Introduzca el nombre de la imagen a procesar: ");
+        FILE = scanner.nextLine(); // Complete filename
+        scanner.close();
 
-        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        String FILENAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE).toString()); // Filename without the extension name (.jpg)
+        BufferedImage srcBuf = javax.imageio.ImageIO.read(Path.of(FILE_FOLDER, FILE).toFile());
+
+        BufferedImage result1 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         // blur1(bf, res);
         // blur2(bf, res);
-        contour(bf, res);
+        contour(srcBuf, result1);
+        saveImage(FILENAME, result1);
 
-        long init = System.nanoTime();
-        BufferedImage a = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
-        gaussianBlur(bf, a, variance, radius);
-        System.out.println((System.nanoTime() - init) / 1_000_000_000);
+        long start = System.nanoTime();
+        BufferedImage result2 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        gaussianBlur(srcBuf, result2, variance, radius);
+        long finish = System.nanoTime();
+        System.out.println("Time: " + (finish - start) / 1_000_000_000);
 
-        saveImage(FILENAME, a);
+        saveImage(FILENAME, result2);
 
-        init = System.nanoTime();
-        BufferedImage b = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
-        gaussianBlur(bf, b, variance * variance_scalar, radius);
-        System.out.println((System.nanoTime() - init) / 1_000_000_000);
-
-        saveImage(FILENAME, b);
+        start = System.nanoTime();
+        BufferedImage result3 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        gaussianBlur(srcBuf, result3, variance * variance_scalar, radius);
+        finish = System.nanoTime();
+        System.out.println("Time: " + (finish - start) / 1_000_000_000);
+        
+        saveImage(FILENAME, result3);
         // difference(a, b, res, 100, 0.5, 0.01);
         // difference(a, b, res, 200, 0.5, 0.004);
-        DoG(a, b, res, 200, 21, 0.04);
-        saveImage(FILENAME, res);
+        DoG(result2, result3, result1, 200, 21, 0.04);
+        saveImage(FILENAME, result1);
 
-        init = System.nanoTime();
-        DoG(a, b, res, threshold, p, phi);
+        start = System.nanoTime();
+        DoG(result2, result3, result1, threshold, p, phi);
 
-        System.out.println((System.nanoTime() - init) / 1_000_000_000);
-
-        saveImage(FILENAME, res);
+        finish = System.nanoTime();
+        System.out.println("Time: " + (finish - start) / 1_000_000_000);
+        
+        saveImage(FILENAME, result1);
 
     }
 
