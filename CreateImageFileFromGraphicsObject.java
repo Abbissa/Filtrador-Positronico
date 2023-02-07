@@ -63,7 +63,6 @@ public class CreateImageFileFromGraphicsObject {
         long finish = System.nanoTime();
         System.out.println("Time: " + (finish - start) / 1_000_000_000);
 
-        saveImage(FILENAME, result2);
 
         start = System.nanoTime();
         BufferedImage result3 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -71,14 +70,14 @@ public class CreateImageFileFromGraphicsObject {
         finish = System.nanoTime();
         System.out.println("Time: " + (finish - start) / 1_000_000_000);
         
-        saveImage(FILENAME, result3);
         // difference(a, b, res, 100, 0.5, 0.01);
         // difference(a, b, res, 200, 0.5, 0.004);
-        DoG(result2, result3, result1, 200, 21, 0.04);
+
+        colorDog(result2, result3, result1, 200, 21, 0.04);
         saveImage(FILENAME, result1);
 
         start = System.nanoTime();
-        DoG(result2, result3, result1, threshold, p, phi);
+        colorDog(result2, result3, result1, threshold, p, phi);
 
         finish = System.nanoTime();
         System.out.println("Time: " + (finish - start) / 1_000_000_000);
@@ -146,13 +145,9 @@ public class CreateImageFileFromGraphicsObject {
             }
 
         }
-
-        System.out.println(sum);
-        double max = 0;
         for (int i = 0; i < radius; i++) {
             for (int j = 0; j < radius; j++) {
                 weights[i][j] /= sum;
-                max = Math.max(max, weights[i][j]);
             }
         }
         return weights;
@@ -219,7 +214,7 @@ public class CreateImageFileFromGraphicsObject {
                 else
                     red = 255;
                 if (green < threshold)
-                    red = (int) (127.5 * (1 + Math.tanh(phi * (green - threshold))));
+                    green = (int) (127.5 * (1 + Math.tanh(phi * (green - threshold))));
                 else
                     green = 255;
                 if (blue < threshold)
@@ -396,13 +391,13 @@ public class CreateImageFileFromGraphicsObject {
                             continue;
                         color = bf.getRGB(x, y);
                         newBlue += Math.abs(blue - (color & 0xff));
-                        newGreen += Math.abs(green - (color & 0xff00) >> 8);
-                        newRed += Math.abs(red - ((color & 0xff0000) >> 16));
+                        newGreen += Math.abs((green - (color & 0xff00)) >> 8);
+                        newRed += Math.abs((red - (color & 0xff0000)) >> 16);
                         n++;
 
                     }
                 }
-                res.setRGB(j, i, ((newRed / n) << 16 | (newGreen / n) << 8 | newBlue / n));
+                res.setRGB(j, i, (((newRed / n) << 16 )| ((newGreen / n) << 8) | (newBlue / n)));
             }
         }
 
