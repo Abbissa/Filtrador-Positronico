@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class CreateImageFileFromGraphicsObject {
 
@@ -15,14 +17,16 @@ public class CreateImageFileFromGraphicsObject {
     private static final int R_DIFF = 10;
     private static final int SALTO = 1;
 
-    private static final String FILE_FOLDER = "sourceImg";
+    private static final String FILE_DEFAULT_SRC_FOLDER = "sourceImg";
     private static final String FILE_DEST_FOLDER = "generatedImg";
     
     private static final int R_SHUFFLE = 50;
     
     private static final int BATCH_SIZE = 4;
     
-    private static String FILE;
+    private static String FILE_STR; //foto.jpg
+    private static String FILE_NAME; //foto
+    private static File FILE; //File reference in the system (has the complete path as an attribute)
 
     //Parameters
     private static double variance = 0.6;
@@ -41,21 +45,21 @@ public class CreateImageFileFromGraphicsObject {
 
     public static void main(String[] args) throws IOException {
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Bienvenido al filtrador positrónico. Este programa recibe una imagen de la carpeta sourceImg y la procesa.");
-        System.out.print("Introduzca el nombre de la imagen a procesar: ");
-        FILE = scanner.nextLine(); // Complete filename
-        scanner.close();
-
-        String FILENAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE).toString()); // Filename without the extension name (.jpg)
-        BufferedImage srcBuf = javax.imageio.ImageIO.read(Path.of(FILE_FOLDER, FILE).toFile());
+        boolean ok = chooseFile();
+        if(!ok) {
+            System.err.println("No se encontró el fichero fuente.");
+            System.exit(-1);
+        }
+        
+        FILE_NAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE_STR).toString()); // Returns the filename without the extension name (.jpg)
+        BufferedImage srcBuf = javax.imageio.ImageIO.read(FILE);
 
         BufferedImage result1 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         // blur1(bf, res);
         // blur2(bf, res);
         contour(srcBuf, result1);
-        saveImage(FILENAME, result1);
+        saveImage(FILE_NAME, result1);
 
         long start = System.nanoTime();
         BufferedImage result2 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -74,7 +78,7 @@ public class CreateImageFileFromGraphicsObject {
         // difference(a, b, res, 200, 0.5, 0.004);
 
         colorDog(result2, result3, result1, 200, 21, 0.04);
-        saveImage(FILENAME, result1);
+        saveImage(FILE_NAME, result1);
 
         start = System.nanoTime();
         colorDog(result2, result3, result1, threshold, p, phi);
@@ -82,8 +86,31 @@ public class CreateImageFileFromGraphicsObject {
         finish = System.nanoTime();
         System.out.println("Time: " + (finish - start) / 1_000_000_000);
         
-        saveImage(FILENAME, result1);
+        saveImage(FILE_NAME, result1);
 
+    }
+
+    private static boolean chooseFile() {
+        JFileChooser chooser = new JFileChooser(FILE_DEFAULT_SRC_FOLDER);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
+        chooser.setFileFilter(filter);
+        
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            // Here things will be done
+            FILE_STR = chooser.getSelectedFile().getName();
+            FILE = chooser.getSelectedFile();
+            if(!FILE.exists() || FILE.isDirectory()) {
+                return false;
+            }
+            
+            System.out.println("You chose to open this file: " +
+            chooser.getSelectedFile().getName());
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private static void gaussianBlur(BufferedImage bf, BufferedImage res, double variance, int radius) {
@@ -342,7 +369,7 @@ public class CreateImageFileFromGraphicsObject {
     }
 
     private static String createDirs(String string) {
-        String FILENAME = FILE.split("\\.")[0];
+        String FILENAME = FILE_STR.split("\\.")[0];
         File dir = Path.of(FILE_DEST_FOLDER, FILENAME).toFile();
         if (!dir.isDirectory()) {
             dir.mkdirs();
@@ -356,12 +383,19 @@ public class CreateImageFileFromGraphicsObject {
 
     private static void saveImage(String FILENAME, BufferedImage res) throws IOException {
         int n = 0;
-        try (Scanner sc = new Scanner(new FileInputStream(Path.of(".config", "n.txt").toString()))) {
-            n = sc.nextInt();
-            File file = Path.of(FILE_DEST_FOLDER, FILENAME, n + ".jpg").toFile();
-            ImageIO.write(res, "jpg", file);
-
+        File f = new File(".config", "n.txt");
+        if (!f.exists() || f.isDirectory()) { //Create the counter file if it doesn't exist
+            try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(".config", "n.txt").toString()))) {
+                pw.println(n + 1);
+            }
         }
+        // Save the image with the corresponding number
+        Scanner sc = new Scanner(new FileInputStream(Path.of(".config", "n.txt").toString()));
+        n = sc.nextInt();
+        File file = Path.of(FILE_DEST_FOLDER, FILENAME, n + ".jpg").toFile();
+        ImageIO.write(res, "jpg", file);
+
+        // Sum 1 to the counter file
         try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(".config", "n.txt").toString()))) {
             pw.println(n + 1);
         }

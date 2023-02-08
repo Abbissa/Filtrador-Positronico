@@ -17,6 +17,7 @@ Filtrador Positronico
 * Añadir seleccion de imagenes a traves de explorador de archivos
 * Añadir interfaz grafica con sliders para poder seleccionar los parametros
 * Añadir visualizacion de las imagenes en sus distintos pasos
+* Añadir nombre del filtro aplicado al nombre de la imagen generada (`420-contour.jpg` por ejemplo)
 
 
 ------
