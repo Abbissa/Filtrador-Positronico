@@ -17,6 +17,9 @@ public class CreateImageFileFromGraphicsObject {
     private static final int R_DIFF = 10;
     private static final int SALTO = 1;
 
+    private static final String CONFIG_FOLDER = ".config";
+    private static final String COUNT_FILE_STR = "n.txt";
+
     private static final String FILE_DEFAULT_SRC_FOLDER = "sourceImg";
     private static final String FILE_DEST_FOLDER = "generatedImg";
     
@@ -369,34 +372,34 @@ public class CreateImageFileFromGraphicsObject {
     }
 
     private static String createDirs(String string) {
+        // https://stackoverflow.com/questions/3634853/how-to-create-a-directory-in-java
         String FILENAME = FILE_STR.split("\\.")[0];
         File dir = Path.of(FILE_DEST_FOLDER, FILENAME).toFile();
-        if (!dir.isDirectory()) {
-            dir.mkdirs();
-        }
-        dir = Path.of(FILE_DEST_FOLDER, FILENAME, "diff").toFile();
-        if (!dir.isDirectory()) {
-            dir.mkdirs();
-        }
+        dir.mkdirs();
+
+        // dir = Path.of(FILE_DEST_FOLDER, FILENAME, "diff").toFile(); //Not being used
+        // dir.mkdirs();
+
         return FILENAME;
     }
 
     private static void saveImage(String FILENAME, BufferedImage res) throws IOException {
         int n = 0;
-        File f = new File(".config", "n.txt");
+        new File(CONFIG_FOLDER).mkdir(); //Ensures that the folder exists
+        File f = new File(CONFIG_FOLDER, COUNT_FILE_STR);
         if (!f.exists() || f.isDirectory()) { //Create the counter file if it doesn't exist
-            try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(".config", "n.txt").toString()))) {
+            try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
                 pw.println(n + 1);
             }
         }
         // Save the image with the corresponding number
-        Scanner sc = new Scanner(new FileInputStream(Path.of(".config", "n.txt").toString()));
+        Scanner sc = new Scanner(new FileInputStream(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()));
         n = sc.nextInt();
         File file = Path.of(FILE_DEST_FOLDER, FILENAME, n + ".jpg").toFile();
         ImageIO.write(res, "jpg", file);
 
         // Sum 1 to the counter file
-        try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(".config", "n.txt").toString()))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
             pw.println(n + 1);
         }
     }
