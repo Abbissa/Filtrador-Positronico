@@ -1,3 +1,4 @@
+package src.controller;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -11,7 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class CreateImageFileFromGraphicsObject {
+public class Filter {
 
     private static final int N_DIFFS = 5;
     private static final int R_DIFF = 10;
@@ -20,18 +21,13 @@ public class CreateImageFileFromGraphicsObject {
     private static final String CONFIG_FOLDER = ".config";
     private static final String COUNT_FILE_STR = "n.txt";
 
-    private static final String FILE_DEFAULT_SRC_FOLDER = "sourceImg";
-    private static final String FILE_DEST_FOLDER = "generatedImg";
-    
     private static final int R_SHUFFLE = 50;
-    
-    private static final int BATCH_SIZE = 4;
-    
-    private static String FILE_STR; //foto.jpg
-    private static String FILE_NAME; //foto
-    private static File FILE; //File reference in the system (has the complete path as an attribute)
 
-    //Parameters
+    private static final int BATCH_SIZE = 4;
+    private static final String FILE_DEST_FOLDER = null;
+    private static final String FILE_NAME = null;
+
+    // Parameters
     private static double variance = 0.6;
     private static double variance_scalar = 1.6;
 
@@ -46,77 +42,14 @@ public class CreateImageFileFromGraphicsObject {
     // sensitive in low values, less sensitive with larger values
     private static double phi = 0.01; // sharpness of black and white transition
 
-    public static void main(String[] args) throws IOException {
+    private static void gaussianBlur(BufferedImage bf, BufferedImage res, double variance, int radius)
+            throws IOException {
 
-        boolean ok = chooseFile();
-        if(!ok) {
-            System.err.println("No se encontró el fichero fuente.");
-            System.exit(-1);
-        }
-        
-        FILE_NAME = createDirs(Path.of(FILE_DEST_FOLDER, FILE_STR).toString()); // Returns the filename without the extension name (.jpg)
-        BufferedImage srcBuf = javax.imageio.ImageIO.read(FILE);
+        String method = "gaussianBlur";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
 
-        BufferedImage result1 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
-
-        // blur1(bf, res);
-        // blur2(bf, res);
-        contour(srcBuf, result1);
-        saveImage(FILE_NAME, result1);
-
-        long start = System.nanoTime();
-        BufferedImage result2 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
-        gaussianBlur(srcBuf, result2, variance, radius);
-        long finish = System.nanoTime();
-        System.out.println("Time: " + (finish - start) / 1_000_000_000);
-
-
-        start = System.nanoTime();
-        BufferedImage result3 = new BufferedImage(srcBuf.getWidth(), srcBuf.getHeight(), BufferedImage.TYPE_INT_RGB);
-        gaussianBlur(srcBuf, result3, variance * variance_scalar, radius);
-        finish = System.nanoTime();
-        System.out.println("Time: " + (finish - start) / 1_000_000_000);
-        
-        // difference(a, b, res, 100, 0.5, 0.01);
-        // difference(a, b, res, 200, 0.5, 0.004);
-
-        colorDog(result2, result3, result1, 200, 21, 0.04);
-        saveImage(FILE_NAME, result1);
-
-        start = System.nanoTime();
-        colorDog(result2, result3, result1, threshold, p, phi);
-
-        finish = System.nanoTime();
-        System.out.println("Time: " + (finish - start) / 1_000_000_000);
-        
-        saveImage(FILE_NAME, result1);
-
-    }
-
-    private static boolean chooseFile() {
-        JFileChooser chooser = new JFileChooser(FILE_DEFAULT_SRC_FOLDER);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
-        chooser.setFileFilter(filter);
-        
-        int returnVal = chooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            // Here things will be done
-            FILE_STR = chooser.getSelectedFile().getName();
-            FILE = chooser.getSelectedFile();
-            if(!FILE.exists() || FILE.isDirectory()) {
-                return false;
-            }
-            
-            System.out.println("You chose to open this file: " +
-            chooser.getSelectedFile().getName());
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    private static void gaussianBlur(BufferedImage bf, BufferedImage res, double variance, int radius) {
+        String path = dir.getAbsolutePath();
 
         double[][] weights = constructWeights(variance, radius);
 
@@ -163,6 +96,8 @@ public class CreateImageFileFromGraphicsObject {
 
             }
         }
+        String name = variance + "-" + radius;
+        saveImage(path, name, res);
     }
 
     private static double[][] constructWeights(double variance, int radius) {
@@ -199,18 +134,42 @@ public class CreateImageFileFromGraphicsObject {
                 * Math.exp(-(Math.pow(x, 2) + Math.pow(y, 2)) / (2 * Math.pow(variance, 2))));
     }
 
-    private static void DoG(BufferedImage bf, BufferedImage res, BufferedImage res2, double threshold,
-            double scalar, double phi) {
+    public static BufferedImage DoG(BufferedImage bf,
+            double variance, double variance_scalar, int radius, double threshold,
+            double scalar, double phi) throws IOException {
+        BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage img2 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        File i1 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance + "-" + radius + ".png");
+
+        if (!i1.exists() || i1.isDirectory())
+            gaussianBlur(bf, img1, variance, radius);
+        else
+            img1 = javax.imageio.ImageIO.read(i1);
+        File i2 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance_scalar * variance + "-"
+                + radius + ".png");
+        if (!i2.exists() || i2.isDirectory())
+            gaussianBlur(bf, img2, variance * variance_scalar, radius);
+        else
+            img2 = javax.imageio.ImageIO.read(i2);
+
+        String method = "DoG";
+        String path = FileManager.createDir(method);
+        
+
+        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+
         for (int i = 0; i < bf.getHeight(); i++) {
             for (int j = 0; j < bf.getWidth(); j++) {
 
-                int blue = (int) Math.abs((1 + scalar) * (bf.getRGB(j, i) & 0xff) - scalar * (res.getRGB(j, i) & 0xff));
+                int blue = (int) Math
+                        .abs((1 + scalar) * (img1.getRGB(j, i) & 0xff) - scalar * (img2.getRGB(j, i) & 0xff));
                 int green = (int) Math
-                        .abs((1 + scalar) * ((bf.getRGB(j, i) & 0xff00) >> 8)
-                                - scalar * ((res.getRGB(j, i) & 0xff00) >> 8));
+                        .abs((1 + scalar) * ((img1.getRGB(j, i) & 0xff00) >> 8)
+                                - scalar * ((img2.getRGB(j, i) & 0xff00) >> 8));
                 int red = (int) Math
-                        .abs((1 + scalar) * ((bf.getRGB(j, i) & 0xff0000) >> 16)
-                                - scalar * ((res.getRGB(j, i) & 0xff0000) >> 16));
+                        .abs((1 + scalar) * ((img1.getRGB(j, i) & 0xff0000) >> 16)
+                                - scalar * ((img2.getRGB(j, i) & 0xff0000) >> 16));
 
                 double col = red + blue + green;
 
@@ -220,24 +179,54 @@ public class CreateImageFileFromGraphicsObject {
                     color = (int) (127.5 * (1 + Math.tanh(phi * (col - threshold))));
 
                 }
-                res2.setRGB(j, i, new Color(color, color, color).getRGB());
+                res.setRGB(j, i, new Color(color, color, color).getRGB());
 
             }
         }
+        String name = variance + "-" + variance_scalar + "-" + radius + "-" + threshold + "-" + scalar + "-" + phi;
+        saveImage(path, name, res);
+
+        return res;
     }
 
-    private static void colorDog(BufferedImage bf, BufferedImage res, BufferedImage res2, double threshold,
-            double scalar, double phi) {
+    private static BufferedImage colorDoG(BufferedImage bf,
+            double variance, double variance_scalar, int radius,
+            double threshold, double scalar, double phi) throws IOException {
+
+        BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage img2 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        File i1 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance + "-" + radius + ".png");
+
+        if (!i1.exists() || i1.isDirectory())
+            gaussianBlur(bf, img1, variance, radius);
+        else
+            img1 = javax.imageio.ImageIO.read(i1);
+        File i2 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance_scalar * variance + "-"
+                + radius + ".png");
+        if (!i2.exists() || i2.isDirectory())
+            gaussianBlur(bf, img2, variance * variance_scalar, radius);
+        else
+            img2 = javax.imageio.ImageIO.read(i2);
+
+        String method = "colorDoG";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+
+        String path = dir.getAbsolutePath();
+
         for (int i = 0; i < bf.getHeight(); i++) {
             for (int j = 0; j < bf.getWidth(); j++) {
 
-                int blue = (int) Math.abs((1 + scalar) * (bf.getRGB(j, i) & 0xff) - scalar * (res.getRGB(j, i) & 0xff));
+                int blue = (int) Math
+                        .abs((1 + scalar) * (img1.getRGB(j, i) & 0xff) - scalar * (img2.getRGB(j, i) & 0xff));
                 int green = (int) Math
-                        .abs((1 + scalar) * ((bf.getRGB(j, i) & 0xff00) >> 8)
-                                - scalar * ((res.getRGB(j, i) & 0xff00) >> 8));
+                        .abs((1 + scalar) * ((img1.getRGB(j, i) & 0xff00) >> 8)
+                                - scalar * ((img2.getRGB(j, i) & 0xff00) >> 8));
                 int red = (int) Math
-                        .abs((1 + scalar) * ((bf.getRGB(j, i) & 0xff0000) >> 16)
-                                - scalar * ((res.getRGB(j, i) & 0xff0000) >> 16));
+                        .abs((1 + scalar) * ((img1.getRGB(j, i) & 0xff0000) >> 16)
+                                - scalar * ((img2.getRGB(j, i) & 0xff0000) >> 16));
 
                 if (red < threshold)
                     red = (int) (127.5 * (1 + Math.tanh(phi * (red - threshold))));
@@ -252,29 +241,48 @@ public class CreateImageFileFromGraphicsObject {
                 else
                     blue = 255;
 
-                res2.setRGB(j, i, new Color(red, green, blue).getRGB());
+                res.setRGB(j, i, new Color(red, green, blue).getRGB());
 
             }
         }
+        String name = variance + "-" + variance_scalar + "-" + radius + "-" + threshold + "-" + scalar + "-" + phi;
+
+        saveImage(path, name, res);
+        return res;
 
     }
 
-    private static void differenceBW(BufferedImage bf, BufferedImage res, BufferedImage res2) {
-        for (int i = 0; i < bf.getHeight(); i++) {
-            for (int j = 0; j < bf.getWidth(); j++) {
+    private static void differenceBW(BufferedImage img1, BufferedImage img2, BufferedImage res) throws IOException {
 
-                int blue = Math.abs(bf.getRGB(j, i) & 0xff - res.getRGB(j, i) & 0xff);
-                int green = Math.abs(((bf.getRGB(j, i) & 0xff00) >> 8) - ((res.getRGB(j, i) & 0xff00) >> 8));
-                int red = Math.abs(((bf.getRGB(j, i) & 0xff0000) >> 16) - ((res.getRGB(j, i) & 0xff0000) >> 16));
+        String method = "differenceBW";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+
+        String path = dir.getAbsolutePath();
+        for (int i = 0; i < img1.getHeight(); i++) {
+            for (int j = 0; j < img1.getWidth(); j++) {
+
+                int blue = Math.abs(img1.getRGB(j, i) & 0xff - img2.getRGB(j, i) & 0xff);
+                int green = Math.abs(((img1.getRGB(j, i) & 0xff00) >> 8) - ((img2.getRGB(j, i) & 0xff00) >> 8));
+                int red = Math.abs(((img1.getRGB(j, i) & 0xff0000) >> 16) - ((img2.getRGB(j, i) & 0xff0000) >> 16));
 
                 int color = (red + green + blue) / 3;
-                res2.setRGB(j, i, (color << 16 | color << 8 | color));
+                res.setRGB(j, i, (color << 16 | color << 8 | color));
 
             }
         }
+        saveImage(path, res);
+
     }
 
-    private static void pixelify(BufferedImage bf, BufferedImage res) {
+    // Añadir parametros a esta funcion
+    private static void pixelify(BufferedImage bf, BufferedImage res) throws IOException {
+
+        String method = "pixelify";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+
+        String path = dir.getAbsolutePath();
 
         for (int i = 0; i < bf.getHeight(); i += 2 * BATCH_SIZE) {
             for (int j = 0; j < bf.getWidth(); j += 2 * BATCH_SIZE) {
@@ -322,9 +330,19 @@ public class CreateImageFileFromGraphicsObject {
             }
         }
 
+        saveImage(path, "pixelify", res);
+
     }
 
-    private static void pixelMean(BufferedImage bf, BufferedImage res) {
+    // Añadir parametros a esta funcion
+    private static void pixelMean(BufferedImage bf, BufferedImage res) throws IOException {
+
+        String method = "pixelMean";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+
+        String path = dir.getAbsolutePath();
+
         for (int o = 0; o < N_DIFFS; o++) {
 
             for (int i = 0; i < bf.getHeight(); i++) {
@@ -353,9 +371,17 @@ public class CreateImageFileFromGraphicsObject {
             }
             bf = res;
         }
+
+        saveImage(path, "pixelMean", res);
     }
 
-    private static void pixelShuffle(BufferedImage bf, BufferedImage res) {
+    private static void pixelShuffle(BufferedImage bf, BufferedImage res) throws IOException {
+
+        String method = "pixelShuffle";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+
+        String path = dir.getAbsolutePath();
 
         Random generator = new Random();
 
@@ -368,26 +394,21 @@ public class CreateImageFileFromGraphicsObject {
                 res.setRGB(j, i, bf.getRGB(x, y));
             }
         }
+        saveImage(path, "pixelShuffle", res);
+    }
+
+    private static void saveImage(String path, String name, BufferedImage res) throws IOException {
+
+        File file = Path.of(path, name + ".png").toFile();
+        ImageIO.write(res, "png", file);
 
     }
 
-    private static String createDirs(String string) {
-        // https://stackoverflow.com/questions/3634853/how-to-create-a-directory-in-java
-        String FILENAME = FILE_STR.split("\\.")[0];
-        File dir = Path.of(FILE_DEST_FOLDER, FILENAME).toFile();
-        dir.mkdirs();
-
-        // dir = Path.of(FILE_DEST_FOLDER, FILENAME, "diff").toFile(); //Not being used
-        // dir.mkdirs();
-
-        return FILENAME;
-    }
-
-    private static void saveImage(String FILENAME, BufferedImage res) throws IOException {
+    private static void saveImage(String path, BufferedImage res) throws IOException {
         int n = 0;
-        new File(CONFIG_FOLDER).mkdir(); //Ensures that the folder exists
+        new File(CONFIG_FOLDER).mkdir(); // Ensures that the folder exists
         File f = new File(CONFIG_FOLDER, COUNT_FILE_STR);
-        if (!f.exists() || f.isDirectory()) { //Create the counter file if it doesn't exist
+        if (!f.exists() || f.isDirectory()) { // Create the counter file if it doesn't exist
             try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
                 pw.println(n + 1);
             }
@@ -395,8 +416,8 @@ public class CreateImageFileFromGraphicsObject {
         // Save the image with the corresponding number
         Scanner sc = new Scanner(new FileInputStream(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()));
         n = sc.nextInt();
-        File file = Path.of(FILE_DEST_FOLDER, FILENAME, n + ".jpg").toFile();
-        ImageIO.write(res, "jpg", file);
+        File file = Path.of(path, n + ".png").toFile();
+        ImageIO.write(res, "png", file);
 
         // Sum 1 to the counter file
         try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
@@ -405,7 +426,14 @@ public class CreateImageFileFromGraphicsObject {
     }
 
     // Doesn't work
-    private static void contour(BufferedImage bf, BufferedImage res) {
+    private static BufferedImage contour(BufferedImage bf) throws IOException {
+
+        String method = "contour";
+        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
+        dir.mkdirs();
+        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        String path = dir.getAbsolutePath();
 
         for (int i = 0; i < bf.getHeight(); i++) {
             for (int j = 0; j < bf.getWidth(); j++) {
@@ -434,9 +462,12 @@ public class CreateImageFileFromGraphicsObject {
 
                     }
                 }
-                res.setRGB(j, i, (((newRed / n) << 16 )| ((newGreen / n) << 8) | (newBlue / n)));
+                res.setRGB(j, i, (((newRed / n) << 16) | ((newGreen / n) << 8) | (newBlue / n)));
             }
         }
+        saveImage(path, res);
+
+        return res;
 
     }
 }
