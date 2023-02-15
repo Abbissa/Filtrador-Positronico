@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Filter {
 
@@ -24,8 +22,6 @@ public class Filter {
     private static final int R_SHUFFLE = 50;
 
     private static final int BATCH_SIZE = 4;
-    private static final String FILE_DEST_FOLDER = null;
-    private static final String FILE_NAME = null;
 
     // Parameters
     private static double variance = 0.6;
@@ -46,10 +42,7 @@ public class Filter {
             throws IOException {
 
         String method = "gaussianBlur";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
+        String path = FileManager.createDir(method);
 
         double[][] weights = constructWeights(variance, radius);
 
@@ -139,23 +132,22 @@ public class Filter {
             double scalar, double phi) throws IOException {
         BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         BufferedImage img2 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
-
-        File i1 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance + "-" + radius + ".png");
+        String method = "gaussianBlur";
+        File i1 = new File(FileManager.getPath(method) + "/" + variance + "-" + radius + ".png");
 
         if (!i1.exists() || i1.isDirectory())
             gaussianBlur(bf, img1, variance, radius);
         else
             img1 = javax.imageio.ImageIO.read(i1);
-        File i2 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance_scalar * variance + "-"
+        File i2 = new File(FileManager.getPath(method) + "/" + variance_scalar * variance + "-"
                 + radius + ".png");
         if (!i2.exists() || i2.isDirectory())
             gaussianBlur(bf, img2, variance * variance_scalar, radius);
         else
             img2 = javax.imageio.ImageIO.read(i2);
 
-        String method = "DoG";
+        method = "DoG";
         String path = FileManager.createDir(method);
-        
 
         BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
@@ -196,25 +188,22 @@ public class Filter {
         BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         BufferedImage img2 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
-
-        File i1 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance + "-" + radius + ".png");
+        String method = "gaussianBlur";
+        File i1 = new File(FileManager.getPath(method) + "/" + variance + "-" + radius + ".png");
 
         if (!i1.exists() || i1.isDirectory())
             gaussianBlur(bf, img1, variance, radius);
         else
             img1 = javax.imageio.ImageIO.read(i1);
-        File i2 = new File(FILE_DEST_FOLDER + "/" + FILE_NAME + "/gaussianBlur/" + variance_scalar * variance + "-"
+        File i2 = new File(FileManager.getPath(method) + "/" + variance_scalar * variance + "-"
                 + radius + ".png");
         if (!i2.exists() || i2.isDirectory())
             gaussianBlur(bf, img2, variance * variance_scalar, radius);
         else
             img2 = javax.imageio.ImageIO.read(i2);
 
-        String method = "colorDoG";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
+        method = "colorDoG";
+        String path = FileManager.createDir(method);
 
         for (int i = 0; i < bf.getHeight(); i++) {
             for (int j = 0; j < bf.getWidth(); j++) {
@@ -255,10 +244,7 @@ public class Filter {
     private static void differenceBW(BufferedImage img1, BufferedImage img2, BufferedImage res) throws IOException {
 
         String method = "differenceBW";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
+        String path = FileManager.createDir(method);
         for (int i = 0; i < img1.getHeight(); i++) {
             for (int j = 0; j < img1.getWidth(); j++) {
 
@@ -279,11 +265,7 @@ public class Filter {
     private static void pixelify(BufferedImage bf, BufferedImage res) throws IOException {
 
         String method = "pixelify";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
-
+        String path = FileManager.createDir(method);
         for (int i = 0; i < bf.getHeight(); i += 2 * BATCH_SIZE) {
             for (int j = 0; j < bf.getWidth(); j += 2 * BATCH_SIZE) {
                 final int X = j;
@@ -338,10 +320,7 @@ public class Filter {
     private static void pixelMean(BufferedImage bf, BufferedImage res) throws IOException {
 
         String method = "pixelMean";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
+        String path = FileManager.createDir(method);
 
         for (int o = 0; o < N_DIFFS; o++) {
 
@@ -378,10 +357,7 @@ public class Filter {
     private static void pixelShuffle(BufferedImage bf, BufferedImage res) throws IOException {
 
         String method = "pixelShuffle";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-
-        String path = dir.getAbsolutePath();
+        String path = FileManager.createDir(method);
 
         Random generator = new Random();
 
@@ -429,11 +405,9 @@ public class Filter {
     private static BufferedImage contour(BufferedImage bf) throws IOException {
 
         String method = "contour";
-        File dir = Path.of(FILE_DEST_FOLDER + "/" + FILE_NAME, method).toFile();
-        dir.mkdirs();
-        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
+        String path = FileManager.createDir(method);
 
-        String path = dir.getAbsolutePath();
+        BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         for (int i = 0; i < bf.getHeight(); i++) {
             for (int j = 0; j < bf.getWidth(); j++) {

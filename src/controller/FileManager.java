@@ -66,4 +66,8 @@ public class FileManager {
     }
 
 
+    public static String getPath(String method){
+        return  Path.of(FILE_DEST_FOLDER,FILE_NAME,method).toString();
+    }
+
 }

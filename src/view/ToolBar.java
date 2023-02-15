@@ -93,6 +93,7 @@ public class ToolBar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.chooseFile();
+                
 
             }
 
