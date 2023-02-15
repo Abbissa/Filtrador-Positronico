@@ -1,32 +1,15 @@
 package src.view;
 
 import java.awt.BorderLayout;
-
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.text.MaskFormatter;
-
 import src.controller.Controller;
-
-import java.awt.image.BufferedImage;
-import java.text.ParseException;
 
 public class GUI extends JFrame {
 
     private Controller controller;
-    
 
     private ToolBar tools;
     private ImagesView iv;
-
-    public Controller getController() {
-        return controller;
-    }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
 
     public ToolBar getTools() {
         return tools;
@@ -45,8 +28,8 @@ public class GUI extends JFrame {
     }
 
     public GUI() {
-        super("Titulo de ventana");
-        setSize(400, 300);
+        super("Título de ventana");
+        setSize(900, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.controller = new Controller(this);
 
@@ -65,5 +48,4 @@ public class GUI extends JFrame {
         v.setVisible(true);
     }
 
-    
 }

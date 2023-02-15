@@ -9,8 +9,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import src.controller.Controller;
@@ -22,24 +20,7 @@ public class ToolBar extends JToolBar {
 
     private static final long serialVersionUID = 1L;
 
-    private static final double MIN_SPEED = 0.5;
-    private static final double MAX_SPEED = 10;
-    private static final double SPEED_EXP = 3;// Speed exponentiation in the slider
     private static final Color DEFAULT_COLOR = new Color(255, 255, 230);
-
-    private JButton stepBack;
-    private JButton step;
-    private JButton clear;
-    private JButton playPause;
-    private JLabel speedLabel = new JLabel("Speed:");
-    private JSlider speedSlider;
-    private JButton openColorChooser;
-    private JButton load;
-    private JToggleButton selectionMode;
-    private JButton save;
-
-    private String playLabel = "PLAY";
-    private String pauseLabel = "PAUSE";
 
     private Controller controller;
 
@@ -56,12 +37,12 @@ public class ToolBar extends JToolBar {
         JLabel threshold = new JLabel("Threshold: ");
         JLabel scalar = new JLabel("Scalar: ");
         JLabel phi = new JLabel("Phi: ");
-        JFormattedTextField varianceText = new JFormattedTextField();
-        JFormattedTextField variance_scalarText = new JFormattedTextField();
-        JFormattedTextField radiusText = new JFormattedTextField();
-        JFormattedTextField thresholdText = new JFormattedTextField();
-        JFormattedTextField scalarText = new JFormattedTextField();
-        JFormattedTextField phiText = new JFormattedTextField();
+        JFormattedTextField varianceText = new JFormattedTextField("0.6");
+        JFormattedTextField variance_scalarText = new JFormattedTextField("1.6");
+        JFormattedTextField radiusText = new JFormattedTextField("10");
+        JFormattedTextField thresholdText = new JFormattedTextField("66.3");
+        JFormattedTextField scalarText = new JFormattedTextField("16");
+        JFormattedTextField phiText = new JFormattedTextField("0.02");
 
         JButton elegirFichero = new JButton("Seleccionar imagen");
         JButton boton = new JButton("Generar");
@@ -93,8 +74,6 @@ public class ToolBar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.chooseFile();
-                
-
             }
 
         });
@@ -120,46 +99,5 @@ public class ToolBar extends JToolBar {
             }
 
         });
-    }
-
-    public void onRunningUpdate(boolean running) {
-        if (running) {
-            playPause.setText(pauseLabel);
-            step.setEnabled(false);
-            clear.setEnabled(false);
-            // speedSlider.setEnabled(false);
-            load.setEnabled(false);
-            selectionMode.setEnabled(false);
-
-            selectionMode.setSelected(false);
-        } else {
-            playPause.setText(playLabel);
-            step.setEnabled(true);
-            clear.setEnabled(true);
-            speedSlider.setEnabled(true);
-            load.setEnabled(true);
-            selectionMode.setEnabled(true);
-        }
-    }
-
-    public void onSelectionMode(int mode) {
-        if (mode == 0) {
-            save.setVisible(false);
-            selectionMode.setSelected(false);
-
-        } else {
-            selectionMode.setSelected(true);
-            playPause.setEnabled(false);
-            step.setEnabled(false);
-            clear.setEnabled(false);
-            speedSlider.setEnabled(false);
-            load.setEnabled(false);
-
-            if (mode == 3) {
-                save.setVisible(true);
-            } else {
-                save.setVisible(false);
-            }
-        }
     }
 }

@@ -1,6 +1,7 @@
 package src.controller;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.awt.Image;
 
@@ -12,6 +13,9 @@ public class Controller {
 
     GUI gui;
 
+    int MAX_IMG_WEIGTH = 450;
+    int MAX_IMG_HEIGHT = 450;
+
     public Controller(GUI gui) {
 
         this.gui = gui;
@@ -21,19 +25,15 @@ public class Controller {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                BufferedImage bf;
-                BufferedImage res;
                 try {
+                    BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
+                    Image loading = javax.imageio.ImageIO.read(new File("Loading.gif"));
+                    gui.getIv().getImageEdit().setIcon(new ImageIcon(loading));
+                    BufferedImage res = Filter.DoG(bf, var, var_sca, rad, th, scalar, phi);
 
-                    bf = javax.imageio.ImageIO.read(FileManager.getFILE());
-                    res = Filter.DoG(bf, var, var_sca, rad, th, scalar, phi);
-                    Image image = res;
-                    if (res.getWidth() > 1200 || res.getHeight() > 1200)
-                        image = res.getScaledInstance(res.getWidth() / 2, res.getHeight() / 2,
-                                BufferedImage.SCALE_SMOOTH);
+                    Image img = getImageResized(res, MAX_IMG_WEIGTH, MAX_IMG_HEIGHT);
 
-                    gui.getIv().getImageEdit().setIcon(new ImageIcon(image));
-
+                    gui.getIv().getImageEdit().setIcon(new ImageIcon(img));
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -43,25 +43,29 @@ public class Controller {
     }
 
     public void chooseFile() {
-
         FileManager.chooseFile();
         FileManager.createDirs();
-        Image img;
-        BufferedImage res;
+
         try {
-            res = javax.imageio.ImageIO.read(FileManager.getFILE());
-            img = res;
-            if (res.getWidth() > 1200 || res.getHeight() > 1200)
-                img = res.getScaledInstance(res.getWidth() / 2, res.getHeight() / 2,
-                        BufferedImage.SCALE_SMOOTH);
+            BufferedImage res = javax.imageio.ImageIO.read(FileManager.getFILE());
+            Image img = getImageResized(res, MAX_IMG_WEIGTH, MAX_IMG_HEIGHT);
 
             gui.getIv().getImageSrc().setIcon(new ImageIcon(img));
-
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+    private Image getImageResized(BufferedImage imgBuf, int maxWidth, int maxHeight) throws IOException {
+        int width = maxWidth;
+        int height = (width * imgBuf.getHeight()) / imgBuf.getWidth(); // (width / res.getWidth()) * res.getHeight() but
+                                                                       // would lose precission
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = (height * imgBuf.getWidth()) / imgBuf.getHeight();
+        }
+        return imgBuf.getScaledInstance(width, height, BufferedImage.SCALE_SMOOTH);
     }
 
 }
