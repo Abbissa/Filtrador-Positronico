@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image;
+import java.awt.Toolkit;
 
 import src.view.GUI;
 
@@ -26,9 +27,10 @@ public class Controller {
             @Override
             public void run() {
                 try {
-                    BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
-                    Image loading = javax.imageio.ImageIO.read(new File("Loading.gif"));
+                    Image loading = Toolkit.getDefaultToolkit().getImage("Loading.gif");
                     gui.getIv().getImageEdit().setIcon(new ImageIcon(loading));
+
+                    BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
                     BufferedImage res = Filter.DoG(bf, var, var_sca, rad, th, scalar, phi);
 
                     Image img = getImageResized(res, MAX_IMG_WEIGTH, MAX_IMG_HEIGHT);
