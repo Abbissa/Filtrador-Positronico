@@ -11,6 +11,8 @@ public class GUI extends JFrame {
     private ToolBar tools;
     private ImagesView iv;
 
+    private ColorView cv;
+
     public ToolBar getTools() {
         return tools;
     }
@@ -27,6 +29,14 @@ public class GUI extends JFrame {
         this.iv = iv;
     }
 
+    public ColorView getCv() {
+        return cv;
+    }
+
+    public void setCv(ColorView cv) {
+        this.cv = cv;
+    }
+
     public GUI() {
         super("Título de ventana");
         setSize(900, 550);
@@ -37,6 +47,9 @@ public class GUI extends JFrame {
 
         this.tools = new ToolBar(controller);
         this.iv = new ImagesView();
+        this.cv = new ColorView(controller);
+
+        this.add(cv, BorderLayout.EAST);
         this.add(tools, BorderLayout.WEST);
 
         this.add(iv, BorderLayout.CENTER);

@@ -1,42 +1,42 @@
-package src.controller;
+package src.controller.Filters;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-
-import java.io.*;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
-import java.util.Scanner;
+import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
+import src.controller.FileManager;
+import src.controller.Util;
 
-public class Filter {
-
+public class Filter implements FilterInterface {
+    private static Logger LOGGER = Logger.getLogger(Filter.class.getName());
     private static final int N_DIFFS = 5;
     private static final int R_DIFF = 10;
     private static final int SALTO = 1;
-
-    private static final String CONFIG_FOLDER = ".config";
-    private static final String COUNT_FILE_STR = "n.txt";
+    private static final Util util = Util.getInstance();
 
     private static final int R_SHUFFLE = 50;
 
     private static final int BATCH_SIZE = 4;
 
     // Parameters
-    private static double variance = 0.6;
-    private static double variance_scalar = 1.6;
 
-    private static int radius = 10;
-
-    // values around the midtone greyvalue of the greyvalue
-    private static double threshold = 0.26 * 255; // controls the level above which luminance values will become white
-
-    // values around 20
-    private static double p = 16; // strength of edge sharpening
-
-    // sensitive in low values, less sensitive with larger values
-    private static double phi = 0.01; // sharpness of black and white transition
+    /*
+     * Valores funcionales
+     * variance = 0.6 (varianza del filtro gaussiano)
+     * variance_scalar = 1.6 (multiplicador de la varianza del filtro gaussiano)
+     * radius = 10 (radio del filtro gaussiano)
+     * threshold = 0.26 * 255 (umbral de la funcion de activacion) // controls the
+     * level above which luminance values will become white
+     * 
+     * scalar = 0.5 (multiplicador de la diferencia de gaussianas)
+     * phi = 0.01 (pendiente de la funcion de activacion) // sharpness of black and
+     * white transition
+     * p = 16 (fuerza del afilado de bordes) // strength of edge sharpening
+     * 
+     */
 
     private static void gaussianBlur(BufferedImage bf, BufferedImage res, double variance, int radius)
             throws IOException {
@@ -80,9 +80,9 @@ public class Filter {
 
                     }
                 }
-                int red = getWeightedValue(reds);
-                int green = getWeightedValue(greens);
-                int blue = getWeightedValue(blues);
+                int red = util.getWeightedValue(reds);
+                int green = util.getWeightedValue(greens);
+                int blue = util.getWeightedValue(blues);
 
                 res.setRGB(i, j,
                         new Color(red, green, blue).getRGB());
@@ -90,7 +90,7 @@ public class Filter {
             }
         }
         String name = variance + "-" + radius;
-        saveImage(path, name, res);
+        util.saveImage(path, name, res);
     }
 
     private static double[][] constructWeights(double variance, int radius) {
@@ -111,23 +111,13 @@ public class Filter {
         return weights;
     }
 
-    private static int getWeightedValue(double[][] weightedColor) {
-        double sum = 0;
-        for (int i = 0; i < weightedColor.length; i++) {
-            for (int j = 0; j < weightedColor.length; j++) {
-                sum += weightedColor[i][j];
-            }
-        }
-        return (int) sum;
-    }
-
     private static double gaussianModel(int x, int y, double variance) {
 
         return (1 / (2 * Math.PI * Math.pow(variance, 2))
                 * Math.exp(-(Math.pow(x, 2) + Math.pow(y, 2)) / (2 * Math.pow(variance, 2))));
     }
 
-    public static BufferedImage DoG(BufferedImage bf,
+    public BufferedImage DoG(BufferedImage bf,
             double variance, double variance_scalar, int radius, double threshold,
             double scalar, double phi) throws IOException {
         BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -139,13 +129,14 @@ public class Filter {
             gaussianBlur(bf, img1, variance, radius);
         else
             img1 = javax.imageio.ImageIO.read(i1);
+        LOGGER.info("Gaussian blur 1 done");
         File i2 = new File(FileManager.getPath(method) + "/" + variance_scalar * variance + "-"
                 + radius + ".png");
         if (!i2.exists() || i2.isDirectory())
             gaussianBlur(bf, img2, variance * variance_scalar, radius);
         else
             img2 = javax.imageio.ImageIO.read(i2);
-
+        LOGGER.info("Gaussian blur 2 done");
         method = "DoG";
         String path = FileManager.createDir(method);
 
@@ -175,8 +166,9 @@ public class Filter {
 
             }
         }
+        LOGGER.info("DoG done");
         String name = variance + "-" + variance_scalar + "-" + radius + "-" + threshold + "-" + scalar + "-" + phi;
-        saveImage(path, name, res);
+        util.saveImage(path, name, res);
 
         return res;
     }
@@ -236,7 +228,7 @@ public class Filter {
         }
         String name = variance + "-" + variance_scalar + "-" + radius + "-" + threshold + "-" + scalar + "-" + phi;
 
-        saveImage(path, name, res);
+        util.saveImage(path, name, res);
         return res;
 
     }
@@ -257,7 +249,7 @@ public class Filter {
 
             }
         }
-        saveImage(path, res);
+        util.saveImage(path, res);
 
     }
 
@@ -312,7 +304,7 @@ public class Filter {
             }
         }
 
-        saveImage(path, "pixelify", res);
+        util.saveImage(path, "pixelify", res);
 
     }
 
@@ -351,7 +343,7 @@ public class Filter {
             bf = res;
         }
 
-        saveImage(path, "pixelMean", res);
+        util.saveImage(path, "pixelMean", res);
     }
 
     private static void pixelShuffle(BufferedImage bf, BufferedImage res) throws IOException {
@@ -370,35 +362,7 @@ public class Filter {
                 res.setRGB(j, i, bf.getRGB(x, y));
             }
         }
-        saveImage(path, "pixelShuffle", res);
-    }
-
-    private static void saveImage(String path, String name, BufferedImage res) throws IOException {
-
-        File file = Path.of(path, name + ".png").toFile();
-        ImageIO.write(res, "png", file);
-
-    }
-
-    private static void saveImage(String path, BufferedImage res) throws IOException {
-        int n = 0;
-        new File(CONFIG_FOLDER).mkdir(); // Ensures that the folder exists
-        File f = new File(CONFIG_FOLDER, COUNT_FILE_STR);
-        if (!f.exists() || f.isDirectory()) { // Create the counter file if it doesn't exist
-            try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
-                pw.println(n + 1);
-            }
-        }
-        // Save the image with the corresponding number
-        Scanner sc = new Scanner(new FileInputStream(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()));
-        n = sc.nextInt();
-        File file = Path.of(path, n + ".png").toFile();
-        ImageIO.write(res, "png", file);
-
-        // Sum 1 to the counter file
-        try (PrintWriter pw = new PrintWriter(new FileWriter(Path.of(CONFIG_FOLDER, COUNT_FILE_STR).toString()))) {
-            pw.println(n + 1);
-        }
+        util.saveImage(path, "pixelShuffle", res);
     }
 
     // Doesn't work
@@ -439,9 +403,17 @@ public class Filter {
                 res.setRGB(j, i, (((newRed / n) << 16) | ((newGreen / n) << 8) | (newBlue / n)));
             }
         }
-        saveImage(path, res);
+        util.saveImage(path, res);
 
         return res;
 
     }
+
+    @Override
+    public BufferedImage DoGGradient(BufferedImage bf, double var, double var_sca, int rad, double th, double scalar,
+            double phi, Color[] colors) throws IOException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'DoGGradient'");
+    }
+
 }

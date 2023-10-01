@@ -5,11 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 
 import src.controller.Controller;
 import src.controller.FileManager;
@@ -37,6 +41,7 @@ public class ToolBar extends JToolBar {
         JLabel threshold = new JLabel("Threshold: ");
         JLabel scalar = new JLabel("Scalar: ");
         JLabel phi = new JLabel("Phi: ");
+
         JFormattedTextField varianceText = new JFormattedTextField("0.6");
         JFormattedTextField variance_scalarText = new JFormattedTextField("1.6");
         JFormattedTextField radiusText = new JFormattedTextField("10");
@@ -46,9 +51,10 @@ public class ToolBar extends JToolBar {
 
         JButton elegirFichero = new JButton("Seleccionar imagen");
         JButton boton = new JButton("Generar");
-        GridLayout gl = new GridLayout(10, 2);
+        GridLayout gl = new GridLayout(12, 2);
+        gl.setHgap(10);
+        gl.setVgap(10);
         this.setLayout(gl);
-
         this.add(variance);
         this.add(varianceText);
 
