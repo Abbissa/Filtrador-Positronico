@@ -5,16 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-
 import src.controller.Controller;
 import src.controller.FileManager;
 
@@ -22,11 +17,73 @@ import java.awt.GridLayout;
 
 public class ToolBar extends JToolBar {
 
+    public JFormattedTextField getVarianceText() {
+        return varianceText;
+    }
+
+    public void setVarianceText(JFormattedTextField varianceText) {
+        this.varianceText = varianceText;
+    }
+
+    public JFormattedTextField getVariance_scalarText() {
+        return variance_scalarText;
+    }
+
+    public void setVariance_scalarText(JFormattedTextField variance_scalarText) {
+        this.variance_scalarText = variance_scalarText;
+    }
+
+    public JFormattedTextField getRadiusText() {
+        return radiusText;
+    }
+
+    public void setRadiusText(JFormattedTextField radiusText) {
+        this.radiusText = radiusText;
+    }
+
+    public JFormattedTextField getThresholdText() {
+        return thresholdText;
+    }
+
+    public void setThresholdText(JFormattedTextField thresholdText) {
+        this.thresholdText = thresholdText;
+    }
+
+    public JFormattedTextField getScalarText() {
+        return scalarText;
+    }
+
+    public void setScalarText(JFormattedTextField scalarText) {
+        this.scalarText = scalarText;
+    }
+
+    public JFormattedTextField getPhiText() {
+        return phiText;
+    }
+
+    public void setPhiText(JFormattedTextField phiText) {
+        this.phiText = phiText;
+    }
+
     private static final long serialVersionUID = 1L;
 
     private static final Color DEFAULT_COLOR = new Color(255, 255, 230);
 
     private Controller controller;
+
+    private JLabel variance;
+    private JLabel variance_scalar;
+    private JLabel radius;
+    private JLabel threshold;
+    private JLabel scalar;
+    private JLabel phi;
+
+    private JFormattedTextField varianceText;
+    private JFormattedTextField variance_scalarText;
+    private JFormattedTextField radiusText;
+    private JFormattedTextField thresholdText;
+    private JFormattedTextField scalarText;
+    private JFormattedTextField phiText;
 
     public ToolBar(Controller controller) {
         this.setBackground(DEFAULT_COLOR);
@@ -35,19 +92,19 @@ public class ToolBar extends JToolBar {
     }
 
     private void initTools() {
-        JLabel variance = new JLabel("Variance: ");
-        JLabel variance_scalar = new JLabel("Variance scalar: ");
-        JLabel radius = new JLabel("Radius: ");
-        JLabel threshold = new JLabel("Threshold: ");
-        JLabel scalar = new JLabel("Scalar: ");
-        JLabel phi = new JLabel("Phi: ");
+        variance = new JLabel("Variance: ");
+        variance_scalar = new JLabel("Variance scalar: ");
+        radius = new JLabel("Radius: ");
+        threshold = new JLabel("Threshold: ");
+        scalar = new JLabel("Scalar: ");
+        phi = new JLabel("Phi: ");
 
-        JFormattedTextField varianceText = new JFormattedTextField("0.6");
-        JFormattedTextField variance_scalarText = new JFormattedTextField("1.6");
-        JFormattedTextField radiusText = new JFormattedTextField("10");
-        JFormattedTextField thresholdText = new JFormattedTextField("66.3");
-        JFormattedTextField scalarText = new JFormattedTextField("16");
-        JFormattedTextField phiText = new JFormattedTextField("0.02");
+        varianceText = new JFormattedTextField("0.6");
+        variance_scalarText = new JFormattedTextField("1.6");
+        radiusText = new JFormattedTextField("10");
+        thresholdText = new JFormattedTextField("66.3");
+        scalarText = new JFormattedTextField("16");
+        phiText = new JFormattedTextField("0.02");
 
         JButton elegirFichero = new JButton("Seleccionar imagen");
         JButton boton = new JButton("Generar");
@@ -94,14 +151,7 @@ public class ToolBar extends JToolBar {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                Double var = Double.parseDouble(varianceText.getText());
-                Double var_sca = Double.parseDouble(variance_scalarText.getText());
-                Integer rad = Integer.parseInt(radiusText.getText());
-                Double th = Double.parseDouble(thresholdText.getText());
-                Double scalar = Double.parseDouble(scalarText.getText());
-                Double phi = Double.parseDouble(phiText.getText());
-                controller.generateDoG(var, var_sca, rad, th, scalar, phi);
+                controller.generateDoG();
             }
 
         });

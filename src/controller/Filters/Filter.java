@@ -410,8 +410,8 @@ public class Filter implements FilterInterface {
     }
 
     @Override
-    public BufferedImage DoGGradient(BufferedImage bf, double var, double var_sca, int rad, double th, double scalar,
-            double phi, Color[] colors) throws IOException {
+    public BufferedImage DoGGradient(BufferedImage bf, double var, double var_sca, int rad, double th, double thColor,
+            double scalar, double phi, Color[] colors, String defaultValue, Color color) throws IOException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'DoGGradient'");
     }

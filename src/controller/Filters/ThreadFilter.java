@@ -96,8 +96,9 @@ public class ThreadFilter implements FilterInterface {
     }
 
     public BufferedImage DoGGradient(BufferedImage bf,
-            double variance, double variance_scalar, int radius, double threshold,
-            double scalar, double phi, Color[] colors) throws IOException {
+            double variance, double variance_scalar, int radius, double threshold, double thresholdColor,
+            double scalar, double phi, Color[] colors, String defaultValue, Color bgColor, boolean invertir)
+            throws IOException {
         BufferedImage[] imgs = get2GaussianBlur(bf, variance, variance_scalar, radius, threshold, scalar, phi);
         BufferedImage img1 = imgs[0];
         BufferedImage img2 = imgs[1];
@@ -105,8 +106,8 @@ public class ThreadFilter implements FilterInterface {
         String path = FileManager.createDir(method);
         BufferedImage res = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-        for (int i = 0; i < bf.getHeight(); i++) {
-            for (int j = 0; j < bf.getWidth(); j++) {
+        for (int i = 0; i < img2.getHeight(); i++) {
+            for (int j = 0; j < img2.getWidth(); j++) {
 
                 int blue = (int) Math
                         .abs((1 + scalar) * (img1.getRGB(j, i) & 0xff) - scalar * (img2.getRGB(j, i) & 0xff));
@@ -120,41 +121,71 @@ public class ThreadFilter implements FilterInterface {
                 double col = red + blue + green;
 
                 col /= 3;
+                boolean cond;
+                if (invertir)
+                    cond = col < thresholdColor;
+                else
+                    cond = col > thresholdColor;
 
-                if (col > threshold) {
-                    res.setRGB(j, i, bf.getRGB(j, i));
-                    continue;
-                }
-                int color = (int) (127.5 * (1 + Math.tanh(phi * (col - threshold))));
-                int max = (int) Math.max(127.5 * (1 + Math.tanh(phi * (0 - threshold))),
-                        127.5 * (1 + Math.tanh(phi * (0))));
+                if (cond) {
 
-                double band = max / colors.length;
-                color = (int) (color / band);
+                    switch (defaultValue) {
+                        case "color":
+                            res.setRGB(j, i, bgColor.getRGB());
+                            continue;
+                        case "DoG":
+                            int color = (int) (127.5 * (1 + Math.tanh(phi * (col - threshold))));
+                            res.setRGB(j, i, new Color(color, color, color).getRGB());
+                            continue;
+                        case "original":
+                            res.setRGB(j, i, bf.getRGB(j, i));
+                            continue;
+                        case "Color DoG":
+                            getBand(threshold, phi, colors, res, i, j, col);
+                            continue;
 
-                if (color == 0) {
-                    res.setRGB(j, i, colors[0].getRGB());
-                    if (col % band > band / 2 && Math.random() > 0.75)
-                        res.setRGB(j, i, colors[1].getRGB());
-                } else if (color >= colors.length - 1) {
-                    res.setRGB(j, i, colors[colors.length - 1].getRGB());
-                    if (col % band < band / 2 && Math.random() > 0.75)
-                        res.setRGB(j, i, colors[colors.length - 2].getRGB());
-                } else {
-                    res.setRGB(j, i, colors[color].getRGB());
-                    if (col % band < band / 3 && Math.random() > 0.75)
-                        res.setRGB(j, i, colors[color - 1].getRGB());
-                    if (col % band > 2 * (band / 3) && Math.random() > 0.75)
-                        res.setRGB(j, i, colors[color + 1].getRGB());
+                    }
 
                 }
+
+                getBand(threshold, phi, colors, res, i, j, col);
 
             }
         }
         LOGGER.info("DoGGradient done");
         String name = variance + "-" + radius;
-        util.saveImage(path, name, res);
+        util.saveImage(path, "nueva", res);
+        util.saveImage(FileManager.createDirNueva(), name, res);
         return res;
+    }
+
+    private void getBand(double threshold, double phi, Color[] colors, BufferedImage res, int i, int j, double col) {
+        int color = (int) (127.5 * (1 + Math.tanh(phi * (col - threshold))));
+        int max = (int) Math.max(127.5 * (1 + Math.tanh(phi * (0 - threshold))),
+                127.5 * (1 + Math.tanh(0)));
+
+        double band = max / colors.length;
+        color = (int) (color / band);
+
+        if (color == 0) {
+            res.setRGB(j, i, colors[0].getRGB());
+            if (col % band > band / 2 && Math.random() > 0.75) {
+                res.setRGB(j, i, colors[1].getRGB());
+            }
+        } else if (color >= colors.length - 1) {
+            res.setRGB(j, i, colors[colors.length - 1].getRGB());
+            if (col % band < band / 2 && Math.random() > 0.75) {
+                res.setRGB(j, i, colors[colors.length - 2].getRGB());
+            }
+        } else {
+            res.setRGB(j, i, colors[color].getRGB());
+            if (col % band < band / 3 && Math.random() > 0.75) {
+                res.setRGB(j, i, colors[color - 1].getRGB());
+            }
+            if (col % band > 2 * (band / 3) && Math.random() > 0.75) {
+                res.setRGB(j, i, colors[color + 1].getRGB());
+            }
+        }
     }
 
     private BufferedImage[] get2GaussianBlur(BufferedImage bf,

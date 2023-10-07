@@ -16,8 +16,6 @@ public class FileManager {
     private static String FILE_NAME; // foto
     private static File FILE; // File reference in the system (has the complete path as an attribute)
 
-    
-
     public static File getFILE() {
         return FILE;
     }
@@ -27,7 +25,7 @@ public class FileManager {
     }
 
     public static boolean chooseFile() {
-        JFileChooser chooser = new JFileChooser(FILE_DEFAULT_SRC_FOLDER);
+        JFileChooser chooser = new ThumbnailFileChooser(FILE_DEFAULT_SRC_FOLDER);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
         chooser.setFileFilter(filter);
 
@@ -57,17 +55,24 @@ public class FileManager {
         return FILE_NAME;
     }
 
-    public static String createDir(String method){
-        File dir = Path.of(FILE_DEST_FOLDER,FILE_NAME,method).toFile();
+    public static String createDir(String method) {
+        File dir = Path.of(FILE_DEST_FOLDER, FILE_NAME, method).toFile();
         dir.mkdirs();
 
         return dir.getAbsolutePath();
 
     }
 
+    public static String createDirNueva() {
+        File dir = Path.of(FILE_DEST_FOLDER).toFile();
+        dir.mkdirs();
 
-    public static String getPath(String method){
-        return  Path.of(FILE_DEST_FOLDER,FILE_NAME,method).toString();
+        return dir.getAbsolutePath();
+
+    }
+
+    public static String getPath(String method) {
+        return Path.of(FILE_DEST_FOLDER, FILE_NAME, method).toString();
     }
 
 }
