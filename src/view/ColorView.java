@@ -171,7 +171,7 @@ public class ColorView extends JToolBar {
     }
 
     private void setGL() {
-        GridLayout gl = new GridLayout(20, 2);
+        GridLayout gl = new GridLayout(12, 2);
         gl.setHgap(10);
         gl.setVgap(10);
         this.setLayout(gl);

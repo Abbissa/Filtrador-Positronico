@@ -51,7 +51,7 @@ public class GUI extends JFrame {
         this.tools = new ToolBar(controller);
         this.iv = new ImagesView();
         this.cv = new ColorView(controller);
-
+        cv.setFloatable(false);
         this.add(cv, BorderLayout.EAST);
 
         this.add(tools, BorderLayout.WEST);
