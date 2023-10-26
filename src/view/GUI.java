@@ -1,10 +1,13 @@
 package src.view;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 import src.controller.Controller;
 
 public class GUI extends JFrame {
+
+    private static final String APP_NAME = "Filtrador Positrónico";
 
     private Controller controller;
 
@@ -38,7 +41,7 @@ public class GUI extends JFrame {
     }
 
     public GUI() {
-        super("Título de ventana");
+        super(APP_NAME);
         setSize(900, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.controller = new Controller(this);
@@ -50,6 +53,7 @@ public class GUI extends JFrame {
         this.cv = new ColorView(controller);
 
         this.add(cv, BorderLayout.EAST);
+
         this.add(tools, BorderLayout.WEST);
 
         this.add(iv, BorderLayout.CENTER);

@@ -13,13 +13,12 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileView;
 
 public class ThumbnailFileChooser extends JFileChooser {
 
     /** All preview icons will be this width and height */
-    private static final int ICON_SIZE = 16;
+    private static final int ICON_SIZE = 30;
 
     /** This blank icon will be used while previews are loading */
     private static final Image LOADING_IMAGE = new BufferedImage(ICON_SIZE, ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
@@ -35,6 +34,7 @@ public class ThumbnailFileChooser extends JFileChooser {
 
     public ThumbnailFileChooser(String path) {
         super(path);
+        this.setPreferredSize(new java.awt.Dimension(800, 500));
     }
 
     // --- Override the other constructors as needed ---
@@ -74,6 +74,17 @@ public class ThumbnailFileChooser extends JFileChooser {
         }
     }
 
+    private Image scaleImage(Image image, int width, int height) {
+        Image scaledImage = null;
+        if(width/image.getWidth(null) < height/image.getHeight(null)) {
+            scaledImage = image.getScaledInstance(-1, Math.min(height, image.getHeight(null)), Image.SCALE_FAST);
+        }
+        else {
+            scaledImage = image.getScaledInstance(Math.min(width, image.getWidth(null)), -1, Image.SCALE_FAST);
+        }
+        return scaledImage;
+    }
+
     private class ThumbnailIconLoader implements Runnable {
         private final ImageIcon icon;
         private final File file;
@@ -89,7 +100,8 @@ public class ThumbnailFileChooser extends JFileChooser {
             // Load and scale the image down, then replace the icon's old image with the new
             // one.
             ImageIcon newIcon = new ImageIcon(file.getAbsolutePath());
-            Image img = newIcon.getImage().getScaledInstance(ICON_SIZE * 2, ICON_SIZE * 2, Image.SCALE_SMOOTH);
+            //Image img = newIcon.getImage().getScaledInstance(ICON_SIZE * 2, ICON_SIZE * 2, Image.SCALE_SMOOTH);
+            Image img = scaleImage(newIcon.getImage(), ICON_SIZE, ICON_SIZE);
             icon.setImage(img);
 
             // Repaint the dialog so we see the new icon.

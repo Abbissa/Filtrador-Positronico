@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import src.controller.Filters.FilterInterface;
@@ -51,7 +50,7 @@ public class Controller {
                     Color bgColor = gui.getCv().getColor();
                     boolean invertir = gui.getCv().getChecBoxInvertir().isSelected();
                     Image loading = Toolkit.getDefaultToolkit().getImage("Loading.gif");
-                    gui.getIv().getImageEdit().setIcon(new ImageIcon(loading));
+                    gui.getIv().setImageEdit(loading);
 
                     BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
                     BufferedImage res = null;
@@ -62,7 +61,7 @@ public class Controller {
                                 bgColor, invertir);
                     Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
 
-                    gui.getIv().getImageEdit().setIcon(new ImageIcon(img));
+                    gui.getIv().setImageEdit(img);
                 } catch (IOException e1) {
 
                     e1.printStackTrace();
@@ -72,16 +71,19 @@ public class Controller {
     }
 
     public void chooseFile() {
-        FileManager.chooseFile();
-        FileManager.createDirs();
+        boolean fileFound = FileManager.chooseFile();
+        if (fileFound) {
+            FileManager.createDirs();
 
-        try {
-            BufferedImage res = javax.imageio.ImageIO.read(FileManager.getFILE());
-            Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
+            try {
+                BufferedImage res = javax.imageio.ImageIO.read(FileManager.getFILE());
+                Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
 
-            gui.getIv().getImageSrc().setIcon(new ImageIcon(img));
-        } catch (IOException e) {
-            e.printStackTrace();
+                gui.getIv().clearImageEdit();
+                gui.getIv().setImageSrc(img);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

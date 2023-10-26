@@ -20,7 +20,8 @@ Filtrador Positronico
 
 
 ## Tareas realizadas
-* Añadir seleccion de imagenes a traves de explorador de archivos
+* Añadir selección de imágenes a traves del explorador de archivos.
+* Escalar la imagen en función del tamaño de la ventana.
 
 
 ------
