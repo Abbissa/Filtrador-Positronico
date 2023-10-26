@@ -12,12 +12,15 @@ Filtrador Positronico
 ## Tareas pendientes
 
 * Extraer metodos de filtrado en clases distintas
-* Añadir a esas clases como atributos las imagenes que hayan procesado, para asi, en caso de que no se hayan modificado los parametros no se tenga que recalcular ese paso
+* Añadir a esas clases como atributos las imagenes que hayan procesado, para asi, en caso de que no se hayan modificado los parametros no se tenga que recalcular ese paso -> añadir cache para imágenes
 * Usar herencia para poder mantener todos los pasos que se desean aplicar a una imagen en un array u otra estructura y asi poder añadir tantos filtros como se deseen en el orden que se deseen 
-* Añadir seleccion de imagenes a traves de explorador de archivos
 * Añadir interfaz grafica con sliders para poder seleccionar los parametros
 * Añadir visualizacion de las imagenes en sus distintos pasos
 * Añadir nombre del filtro aplicado al nombre de la imagen generada (`420-contour.jpg` por ejemplo)
+
+
+## Tareas realizadas
+* Añadir seleccion de imagenes a traves de explorador de archivos
 
 
 ------
@@ -35,15 +38,15 @@ Filtrador Positronico
 
 * ### Libertad
 
-<kbd><img src="LibertadG2.jpg" title="Imagen original" width="25%" height="25%"></kbd><kbd><img src="LibertadDoG.jpg" title="Imagen con DoG aplicada" width="25%" height="25%"></kbd>
+<kbd><img src="exampleImg/LibertadG2.jpg" title="Imagen original" width="25%" height="25%"></kbd><kbd><img src="exampleImg/LibertadDoG.jpg" title="Imagen con DoG aplicada" width="25%" height="25%"></kbd>
 
 * ### Nymeria
-<kbd><img src="NymeriaG2.jpg" title="Imagen original" width="25%" height="25%"></kbd><kbd><img src="NymeriaDoG.jpg" title="Imagen con DoG aplicada" width="25%" height="25%"></kbd>
+<kbd><img src="exampleImg/NymeriaG2.jpg" title="Imagen original" width="25%" height="25%"></kbd><kbd><img src="exampleImg/NymeriaDoG.jpg" title="Imagen con DoG aplicada" width="25%" height="25%"></kbd>
 
 * ### Montaña
-<kbd><img src="MontañaG2.jpg" title="Imagen original" width="30%" height="30%"></kbd><kbd><img src="MontañaDoG.jpg" title="Imagen con DoG aplicada" width="30%" height="30%"></kbd>
+<kbd><img src="exampleImg/MontañaG2.jpg" title="Imagen original" width="30%" height="30%"></kbd><kbd><img src="exampleImg/MontañaDoG.jpg" title="Imagen con DoG aplicada" width="30%" height="30%"></kbd>
 * ### Montaña2
-<kbd><img src="MontañaG2.jpg" title="Imagen original" width="30%" height="30%"></kbd><kbd><img src="Montaña2DoG.jpg" title="Imagen con DoG aplicada" width="30%" height="30%"></kbd>
+<kbd><img src="exampleImg/MontañaG2.jpg" title="Imagen original" width="30%" height="30%"></kbd><kbd><img src="exampleImg/Montaña2DoG.jpg" title="Imagen con DoG aplicada" width="30%" height="30%"></kbd>
  
 
 
