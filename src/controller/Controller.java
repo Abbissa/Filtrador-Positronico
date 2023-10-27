@@ -87,6 +87,16 @@ public class Controller {
         }
     }
 
+    public void saveImage() throws NullPointerException {
+        Image img = gui.getIv().getImageEdit();
+        if (img != null) {
+            FileManager.saveImage(img);
+        }
+        else {
+            throw new NullPointerException("No image to save");
+        }
+    }
+
     private Image getImageResized(BufferedImage imgBuf, int maxWidth, int maxHeight) throws IOException {
         int width = maxWidth;
         int height = (width * imgBuf.getHeight()) / imgBuf.getWidth(); // (width / res.getWidth()) * res.getHeight() but

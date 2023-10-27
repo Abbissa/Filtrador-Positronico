@@ -132,6 +132,23 @@ public class ToolBar extends JToolBar {
 
         this.add(elegirFichero);
         this.add(boton);
+        JButton guardarImagen = new JButton("Guardar");
+        this.add(guardarImagen);
+
+        guardarImagen.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    controller.saveImage();
+                } catch (NullPointerException e1) {
+                    JFrame jFrame = new JFrame();
+                    JOptionPane.showMessageDialog(jFrame, "No hay imagen para guardar", "Aviso",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        });
         elegirFichero.addActionListener(new ActionListener() {
 
             @Override

@@ -1,6 +1,10 @@
 package src.controller;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
@@ -46,6 +50,52 @@ public class FileManager {
         }
     }
 
+    public static BufferedImage toBufferedImage(Image img) {
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+
+    public static void saveImage(Image imageEdit) {
+        String format = "png";
+        /*
+         * Use the format name to initialise the file suffix.
+         * Format names typically correspond to suffixes
+         */
+        File saveFile = new File("editedImage." + format);
+        JFileChooser chooser = new JFileChooser();
+        chooser.setSelectedFile(saveFile);
+        int rval = chooser.showSaveDialog(null);
+        if (rval == JFileChooser.APPROVE_OPTION) {
+            saveFile = chooser.getSelectedFile();
+            /*
+             * Write the filtered image in the selected format,
+             * to the file chosen by the user.
+             */
+            try {
+                BufferedImage bi = toBufferedImage(imageEdit);
+                ImageIO.write(bi, format, saveFile);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                System.err.println("No image to save");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Error saving image");
+            }
+        }
+    }
+
     public static String createDirs() {
         // https://stackoverflow.com/questions/3634853/how-to-create-a-directory-in-java
         FILE_NAME = FILE_STR.split("\\.")[0];
@@ -74,5 +124,4 @@ public class FileManager {
     public static String getPath(String method) {
         return Path.of(FILE_DEST_FOLDER, FILE_NAME, method).toString();
     }
-
 }

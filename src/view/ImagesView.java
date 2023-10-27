@@ -52,6 +52,10 @@ public class ImagesView extends JPanel implements ComponentListener {
         return imageEditLabel;
     }
 
+    public Image getImageEdit() {
+        return imageEdit;
+    }
+
     public void setImageEdit(Image imageEdit) {
         this.imageEdit = imageEdit;
         
