@@ -19,7 +19,7 @@ import javax.swing.text.JTextComponent;
 
 import src.controller.Controller;
 
-public class ColorView extends JToolBar {
+public class ColorSettings extends JToolBar {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,27 +35,11 @@ public class ColorView extends JToolBar {
     private JList<String> bgList;
     JTextComponent thresholdColorText;
 
-    public JList<String> getBgList() {
-        return bgList;
-    }
-
-    public void setBgList(JList<String> bgList) {
-        this.bgList = bgList;
-    }
-
     private JCheckBox checBox;
 
     private JCheckBox checBoxInvertir;
 
-    public JCheckBox getChecBoxInvertir() {
-        return checBoxInvertir;
-    }
-
-    public void setChecBoxInvertir(JCheckBox checBoxInvertir) {
-        this.checBoxInvertir = checBoxInvertir;
-    }
-
-    public ColorView(Controller controller) {
+    public ColorSettings(Controller controller) {
         super();
         hsb = new float[3];
         this.controller = controller;
@@ -86,7 +70,6 @@ public class ColorView extends JToolBar {
 
         colorPanel.setLayout(gl2);
         this.add(colorPanel);
-
     }
 
     private void botonGenerarColores() {
@@ -247,4 +230,19 @@ public class ColorView extends JToolBar {
         return thresholdColorText;
     }
 
+    public JList<String> getBgList() {
+        return bgList;
+    }
+
+    public void setBgList(JList<String> bgList) {
+        this.bgList = bgList;
+    }
+
+    public JCheckBox getChecBoxInvertir() {
+        return checBoxInvertir;
+    }
+
+    public void setChecBoxInvertir(JCheckBox checBoxInvertir) {
+        this.checBoxInvertir = checBoxInvertir;
+    }
 }

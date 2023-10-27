@@ -11,34 +11,10 @@ public class GUI extends JFrame {
 
     private Controller controller;
 
-    private ToolBar tools;
-    private ImagesView iv;
+    private BasicSettings basicSettings;
+    private ImagesViewer imagesViewer;
 
-    private ColorView cv;
-
-    public ToolBar getTools() {
-        return tools;
-    }
-
-    public void setTools(ToolBar tools) {
-        this.tools = tools;
-    }
-
-    public ImagesView getIv() {
-        return iv;
-    }
-
-    public void setIv(ImagesView iv) {
-        this.iv = iv;
-    }
-
-    public ColorView getCv() {
-        return cv;
-    }
-
-    public void setCv(ColorView cv) {
-        this.cv = cv;
-    }
+    private ColorSettings colorSettings;
 
     public GUI() {
         super(APP_NAME);
@@ -48,16 +24,16 @@ public class GUI extends JFrame {
 
         this.setLayout(new BorderLayout());
 
-        this.tools = new ToolBar(controller);
-        this.iv = new ImagesView();
-        this.cv = new ColorView(controller);
-        cv.setFloatable(false);
-        this.add(cv, BorderLayout.EAST);
+        this.basicSettings = new BasicSettings(controller);
+        this.imagesViewer = new ImagesViewer();
+        this.colorSettings = new ColorSettings(controller);
+        colorSettings.setFloatable(false);
 
-        this.add(tools, BorderLayout.WEST);
+        this.add(basicSettings, BorderLayout.WEST);
 
-        this.add(iv, BorderLayout.CENTER);
+        this.add(imagesViewer, BorderLayout.CENTER);
 
+        this.add(colorSettings, BorderLayout.EAST);
     }
 
     public static void main(String[] args) {
@@ -65,4 +41,16 @@ public class GUI extends JFrame {
         v.setVisible(true);
     }
 
+    // Getters
+    public BasicSettings getBasicSettings() {
+        return basicSettings;
+    }
+
+    public ImagesViewer getImagesViewer() {
+        return imagesViewer;
+    }
+
+    public ColorSettings getColorSettings() {
+        return colorSettings;
+    }
 }

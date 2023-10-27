@@ -38,19 +38,19 @@ public class Controller {
             @Override
             public void run() {
                 try {
-                    double var = Float.parseFloat(gui.getTools().getVarianceText().getText());
-                    double var_sca = Float.parseFloat(gui.getTools().getVariance_scalarText().getText());
-                    int rad = Integer.parseInt(gui.getTools().getRadiusText().getText());
-                    double th = Float.parseFloat(gui.getTools().getThresholdText().getText());
-                    double scalar = Float.parseFloat(gui.getTools().getScalarText().getText());
-                    double phi = Float.parseFloat(gui.getTools().getPhiText().getText());
-                    double thColor = Double.parseDouble(gui.getCv().getThresholdColorText().getText());
+                    double var = Float.parseFloat(gui.getBasicSettings().getVarianceText().getText());
+                    double var_sca = Float.parseFloat(gui.getBasicSettings().getVariance_scalarText().getText());
+                    int rad = Integer.parseInt(gui.getBasicSettings().getRadiusText().getText());
+                    double th = Float.parseFloat(gui.getBasicSettings().getThresholdText().getText());
+                    double scalar = Float.parseFloat(gui.getBasicSettings().getScalarText().getText());
+                    double phi = Float.parseFloat(gui.getBasicSettings().getPhiText().getText());
+                    double thColor = Double.parseDouble(gui.getColorSettings().getThresholdColorText().getText());
 
-                    String defaultValue = gui.getCv().getBgList().getSelectedValue();
-                    Color bgColor = gui.getCv().getColor();
-                    boolean invertir = gui.getCv().getChecBoxInvertir().isSelected();
+                    String defaultValue = gui.getColorSettings().getBgList().getSelectedValue();
+                    Color bgColor = gui.getColorSettings().getColor();
+                    boolean invertir = gui.getColorSettings().getChecBoxInvertir().isSelected();
                     Image loading = Toolkit.getDefaultToolkit().getImage("Loading.gif");
-                    gui.getIv().setImageEdit(loading);
+                    gui.getImagesViewer().setImageEdit(loading);
 
                     BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
                     BufferedImage res = null;
@@ -61,7 +61,7 @@ public class Controller {
                                 bgColor, invertir);
                     Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
 
-                    gui.getIv().setImageEdit(img);
+                    gui.getImagesViewer().setImageEdit(img);
                 } catch (IOException e1) {
 
                     e1.printStackTrace();
@@ -79,8 +79,8 @@ public class Controller {
                 BufferedImage res = javax.imageio.ImageIO.read(FileManager.getFILE());
                 Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
 
-                gui.getIv().clearImageEdit();
-                gui.getIv().setImageSrc(img);
+                gui.getImagesViewer().clearImageEdit();
+                gui.getImagesViewer().setImageSrc(img);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -88,7 +88,7 @@ public class Controller {
     }
 
     public void saveImage() throws NullPointerException {
-        Image img = gui.getIv().getImageEdit();
+        Image img = gui.getImagesViewer().getImageEdit();
         if (img != null) {
             FileManager.saveImage(img);
         }
@@ -112,22 +112,22 @@ public class Controller {
         LOGGER.info("Generating colors");
         Util util = Util.getInstance();
         this.colors = util.generatePalettes(selectedValue, parseInt, color, useCustomColor);
-        gui.getCv().getColorPanel().removeAll();
+        gui.getColorSettings().getColorPanel().removeAll();
         GridLayout gl2 = new GridLayout();
         gl2.setColumns(4);
         gl2.setRows(parseInt / 4);
-        gui.getCv().getColorPanel().setLayout(gl2);
+        gui.getColorSettings().getColorPanel().setLayout(gl2);
 
         for (int i = 0; i < colors.length; i++) {
             JPanel panel = new JPanel();
             panel.setPreferredSize(new Dimension(25, 50));
 
             panel.setBackground(colors[i]);
-            gui.getCv().getColorPanel().add(panel);
+            gui.getColorSettings().getColorPanel().add(panel);
 
         }
         LOGGER.info("Colors generated");
-        gui.getCv().updateUI();
+        gui.getColorSettings().updateUI();
 
         gui.repaint();
         LOGGER.info("Colors repainted");

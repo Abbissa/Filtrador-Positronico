@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ImagesView extends JPanel implements ComponentListener {
+public class ImagesViewer extends JPanel implements ComponentListener {
 
     private static final String ORIGINAL_IMAGE_STRING = "Original image";
     private static final String EDITED_IMAGE_STRING = "Edited image";
@@ -21,7 +21,7 @@ public class ImagesView extends JPanel implements ComponentListener {
     private Image imageSrc;
     private Image imageEdit;
 
-    public ImagesView() {
+    public ImagesViewer() {
         this.imageSrcLabel = new JLabel(ORIGINAL_IMAGE_STRING, JLabel.CENTER);
         this.imageEditLabel = new JLabel(EDITED_IMAGE_STRING, JLabel.CENTER);
         this.addComponentListener(this);
