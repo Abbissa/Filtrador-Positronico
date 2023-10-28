@@ -46,7 +46,7 @@ public class Controller {
                     double phi = Float.parseFloat(gui.getBasicSettings().getPhiText().getText());
                     double thColor = Double.parseDouble(gui.getColorSettings().getThresholdColorText().getText());
 
-                    String defaultValue = gui.getColorSettings().getBgList().getSelectedValue();
+                    String defaultValue = (String) gui.getColorSettings().getBgList().getSelectedItem();
                     Color bgColor = gui.getColorSettings().getColor();
                     boolean invertir = gui.getColorSettings().getChecBoxInvertir().isSelected();
                     Image loading = Toolkit.getDefaultToolkit().getImage("Loading.gif");

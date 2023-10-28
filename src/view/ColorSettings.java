@@ -8,13 +8,11 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
 import javax.swing.text.JTextComponent;
 
 import src.controller.Controller;
@@ -31,8 +29,8 @@ public class ColorSettings extends JToolBar {
     private float[] hsb;
     private String bgMode;
     private JFormattedTextField n_colors;
-    private JList<String> list;
-    private JList<String> bgList;
+    private JComboBox<String> list;
+    private JComboBox<String> bgList;
     JTextComponent thresholdColorText;
 
     private JCheckBox checBox;
@@ -44,16 +42,26 @@ public class ColorSettings extends JToolBar {
         hsb = new float[3];
         this.controller = controller;
 
-        setGL();
+        setGridLayout();
 
-        nColores();
+        //nColores
+        JLabel n_colorsText = new JLabel("Nº colors: ");
+        n_colors = new JFormattedTextField("8");
+
+        this.add(n_colorsText);
+        this.add(n_colors);
+
+        // Threshold
         JLabel thresholdColor = new JLabel("Threshold color:  ");
         thresholdColorText = new JFormattedTextField("20");
 
         this.add(thresholdColor);
         this.add(thresholdColorText);
+
+        //Invertir colores
         checBoxInvertir = new JCheckBox("Invertir colores");
         this.add(checBoxInvertir);
+        this.addSeparator();
 
         colorMode();
 
@@ -72,21 +80,11 @@ public class ColorSettings extends JToolBar {
         this.add(colorPanel);
     }
 
-    private void botonGenerarColores() {
-        Button boton = new Button("Generar");
-        boton.addActionListener(new java.awt.event.ActionListener() {
-
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Color[] colors = controller.generateColor(list.getSelectedValue(),
-                        Integer.parseInt(n_colors.getText()), hsb, checBox.isSelected());
-
-                controller.mode = list.getSelectedValue();
-                controller.n_colors = Integer.parseInt(n_colors.getText());
-                controller.colors = colors;
-            }
-
-        });
-        this.add(boton);
+    private void setGridLayout() {
+        GridLayout gl = new GridLayout(12, 2);
+        gl.setHgap(10);
+        gl.setVgap(10);
+        this.setLayout(gl);
     }
 
     private void colorPersonalizado() {
@@ -108,11 +106,12 @@ public class ColorSettings extends JToolBar {
 
     private void colorBG() {
         String[] bgModes = { "color", "original", "DoG", "Color DoG" };
-        bgList = new JList<String>(bgModes);
-        bgList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        bgList = new JComboBox<String>(bgModes);
+        //bgList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JLabel bgMode = new JLabel("Background mode: ");
         this.add(bgMode);
-        this.add(new JScrollPane(bgList));
+        this.add(bgList);
+        //this.add(new JScrollPane(bgList));
 
         defaultValue = new JButton("Seleccionar para el fondo");
 
@@ -131,34 +130,33 @@ public class ColorSettings extends JToolBar {
         String[] colorModes = { "DoG", "monochromatic", "complementary", "analagous", "triadic complementary",
                 "tetradic complementary" };
         JLabel colorMode = new JLabel("Color mode: ");
-        list = new JList<String>(colorModes);
-
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setSelectedIndex(1);
-
-        list.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                controller.mode = list.getSelectedValue();
+        
+        this.add(colorMode);
+        //Añadir en formato desplegable
+        list = new JComboBox<>(colorModes);
+        list.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                controller.mode = (String) list.getSelectedItem();
             }
         });
-        this.add(colorMode);
-        this.add(new JScrollPane(list));
+        this.add(list);
     }
 
-    private void nColores() {
-        JLabel n_colorsText = new JLabel("Nº colors: ");
-        n_colors = new JFormattedTextField("8");
+    private void botonGenerarColores() {
+        Button boton = new Button("Generar");
+        boton.addActionListener(new java.awt.event.ActionListener() {
 
-        this.add(n_colorsText);
-        this.add(n_colors);
-    }
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Color[] colors = controller.generateColor((String) list.getSelectedItem(),
+                        Integer.parseInt(n_colors.getText()), hsb, checBox.isSelected());
 
-    private void setGL() {
-        GridLayout gl = new GridLayout(12, 2);
-        gl.setHgap(10);
-        gl.setVgap(10);
-        this.setLayout(gl);
+                controller.mode = (String) list.getSelectedItem();
+                controller.n_colors = Integer.parseInt(n_colors.getText());
+                controller.colors = colors;
+            }
 
+        });
+        this.add(boton);
     }
 
     // Getters and setters
@@ -230,11 +228,11 @@ public class ColorSettings extends JToolBar {
         return thresholdColorText;
     }
 
-    public JList<String> getBgList() {
+    public JComboBox<String> getBgList() {
         return bgList;
     }
 
-    public void setBgList(JList<String> bgList) {
+    public void setBgList(JComboBox<String> bgList) {
         this.bgList = bgList;
     }
 
