@@ -1,6 +1,7 @@
 package src.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -8,6 +9,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import src.controller.Controller;
 import src.controller.FileManager;
@@ -32,7 +34,9 @@ public class BasicSettings extends JToolBar {
     //TODO: Convertir en sliders
     private JFormattedTextField varianceText = new JFormattedTextField("0.6");
     private JFormattedTextField variance_scalarText = new JFormattedTextField("1.6");
-    private JFormattedTextField radiusText = new JFormattedTextField("10");
+    //private JFormattedTextField radiusText = new JFormattedTextField("10");
+    //Rango de 1 a 40, distribución lineal.
+    private JSlider radiusInput = new JSlider(0, 40, 10);//Ejemplo de como se hace un slider
     private JFormattedTextField thresholdText = new JFormattedTextField("66.3");
     private JFormattedTextField scalarText = new JFormattedTextField("16");
     private JFormattedTextField phiText = new JFormattedTextField("0.02");
@@ -48,7 +52,7 @@ public class BasicSettings extends JToolBar {
     }
 
     private void initTools() {
-        GridLayout grid = new GridLayout(12, 2);
+        GridLayout grid = new GridLayout(9, 2);
 
         grid.setHgap(10);
         grid.setVgap(10);
@@ -61,7 +65,12 @@ public class BasicSettings extends JToolBar {
         this.add(variance_scalarText);
 
         this.add(radius);
-        this.add(radiusText);
+        radiusInput.setPreferredSize(new Dimension(140, 50));
+        radiusInput.setMajorTickSpacing(10);
+        radiusInput.setMinorTickSpacing(2);
+        radiusInput.setPaintTicks(true);
+        radiusInput.setPaintLabels(true);
+        this.add(radiusInput);
 
         this.add(threshold);
         this.add(thresholdText);
@@ -115,54 +124,28 @@ public class BasicSettings extends JToolBar {
         });
     }
 
-
-    
-
+    // Getters
     public JFormattedTextField getVarianceText() {
         return varianceText;
-    }
-
-    public void setVarianceText(JFormattedTextField varianceText) {
-        this.varianceText = varianceText;
     }
 
     public JFormattedTextField getVariance_scalarText() {
         return variance_scalarText;
     }
 
-    public void setVariance_scalarText(JFormattedTextField variance_scalarText) {
-        this.variance_scalarText = variance_scalarText;
-    }
-
-    public JFormattedTextField getRadiusText() {
-        return radiusText;
-    }
-
-    public void setRadiusText(JFormattedTextField radiusText) {
-        this.radiusText = radiusText;
+    public JSlider getRadiusInput() {
+        return radiusInput;
     }
 
     public JFormattedTextField getThresholdText() {
         return thresholdText;
     }
 
-    public void setThresholdText(JFormattedTextField thresholdText) {
-        this.thresholdText = thresholdText;
-    }
-
     public JFormattedTextField getScalarText() {
         return scalarText;
     }
 
-    public void setScalarText(JFormattedTextField scalarText) {
-        this.scalarText = scalarText;
-    }
-
     public JFormattedTextField getPhiText() {
         return phiText;
-    }
-
-    public void setPhiText(JFormattedTextField phiText) {
-        this.phiText = phiText;
     }
 }

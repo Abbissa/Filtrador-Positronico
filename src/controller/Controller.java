@@ -40,7 +40,7 @@ public class Controller {
                 try {
                     double var = Float.parseFloat(gui.getBasicSettings().getVarianceText().getText());
                     double var_sca = Float.parseFloat(gui.getBasicSettings().getVariance_scalarText().getText());
-                    int rad = Integer.parseInt(gui.getBasicSettings().getRadiusText().getText());
+                    int rad = gui.getBasicSettings().getRadiusInput().getValue();
                     double th = Float.parseFloat(gui.getBasicSettings().getThresholdText().getText());
                     double scalar = Float.parseFloat(gui.getBasicSettings().getScalarText().getText());
                     double phi = Float.parseFloat(gui.getBasicSettings().getPhiText().getText());

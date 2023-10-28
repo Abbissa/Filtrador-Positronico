@@ -15,10 +15,13 @@ Filtrador Positronico
 * Añadir a esas clases como atributos las imagenes que hayan procesado, para asi, en caso de que no se hayan modificado los parametros no se tenga que recalcular ese paso -> añadir cache para imágenes
 * Usar herencia para poder mantener todos los pasos que se desean aplicar a una imagen en un array u otra estructura y asi poder añadir tantos filtros como se deseen en el orden que se deseen 
 * Añadir interfaz gráfica con sliders para poder seleccionar los parámetros.
+    * Definir rangos de valores posibles para cada parámetro.
+    * Definir distribución de los valores en el slider (exponencial, lineal, ...).
+    * Programar sliders.
 * Añadir visualizacion de las imagenes en sus distintos pasos
 * Añadir nombre del filtro aplicado al nombre de la imagen generada (`420-contour.jpg` por ejemplo)
 * Mejorar sistema de cache para que no guarde las imágenes en la carpeta generatedImg.
-* Detectar combinaciones de campos no válidad (evitar nullPointer exceptions).
+* Detectar combinaciones de campos no válidas (evitar nullPointer exceptions) -> inhabilitar campos.
 
 
 ## Tareas realizadas
