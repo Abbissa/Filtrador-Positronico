@@ -22,6 +22,28 @@ public class BasicSettings extends JToolBar {
 
     private static final Color DEFAULT_COLOR = new Color(255, 255, 230);
 
+    private static final double VARIANCE_DEFAULT = 0.6;
+    private static final double VARIANCE_SCALAR_DEFAULT = 1.6;
+    private static final int RADIUS_DEFAULT = 10;
+    private static final double THRESHOLD_DEFAULT = 66.3;
+    private static final double SCALAR_DEFAULT = 16;
+    private static final double PHI_DEFAULT = 0.02;
+
+    private static final double VARIANCE_MIN = 0;
+    private static final double VARIANCE_MAX = 10;
+    private static final double VARIANCE_SCALAR_MIN = 0;
+    private static final double VARIANCE_SCALAR_MAX = 100;
+    private static final int RADIUS_MIN = 0;
+    private static final int RADIUS_MAX = 40;
+    private static final double THRESHOLD_MIN = 0;
+    private static final double THRESHOLD_MAX = 256;
+    private static final double SCALAR_MIN = 2;
+    private static final double SCALAR_MAX = 100;
+    private static final double PHI_MIN = -1;
+    private static final double PHI_MAX = 1;
+
+    //varianza, scalar de varianza, scalar y phi con distribución exponencial
+
     private Controller controller;
 
     private JLabel variance = new JLabel("Variance: ");
@@ -32,14 +54,14 @@ public class BasicSettings extends JToolBar {
     private JLabel phi = new JLabel("Phi: ");
 
     //TODO: Convertir en sliders
-    private JFormattedTextField varianceText = new JFormattedTextField("0.6");
-    private JFormattedTextField variance_scalarText = new JFormattedTextField("1.6");
+    private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));
+    private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));
     //private JFormattedTextField radiusText = new JFormattedTextField("10");
     //Rango de 1 a 40, distribución lineal.
-    private JSlider radiusInput = new JSlider(0, 40, 10);//Ejemplo de como se hace un slider
-    private JFormattedTextField thresholdText = new JFormattedTextField("66.3");
-    private JFormattedTextField scalarText = new JFormattedTextField("16");
-    private JFormattedTextField phiText = new JFormattedTextField("0.02");
+    private JSlider radiusInput = new JSlider(RADIUS_MIN, RADIUS_MAX, RADIUS_DEFAULT);//Ejemplo de como se hace un slider
+    private JFormattedTextField thresholdText = new JFormattedTextField(String.valueOf(THRESHOLD_DEFAULT));
+    private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));
+    private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));
 
     private JButton elegirFichero = new JButton("Seleccionar imagen");
     private JButton generateImageButton = new JButton("Generar");
@@ -133,8 +155,8 @@ public class BasicSettings extends JToolBar {
         return variance_scalarText;
     }
 
-    public JSlider getRadiusInput() {
-        return radiusInput;
+    public int getRadius() {
+        return radiusInput.getValue();
     }
 
     public JFormattedTextField getThresholdText() {

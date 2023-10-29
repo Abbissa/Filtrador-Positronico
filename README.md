@@ -22,6 +22,10 @@ Filtrador Positronico
 * Añadir nombre del filtro aplicado al nombre de la imagen generada (`420-contour.jpg` por ejemplo)
 * Mejorar sistema de cache para que no guarde las imágenes en la carpeta generatedImg.
 * Detectar combinaciones de campos no válidas (evitar nullPointer exceptions) -> inhabilitar campos.
+* Añadir un botón que ajuste los valores a por defecto.
+
+* A largo plazo:
+    * Vectorizar en GPU.
 
 
 ## Tareas realizadas
