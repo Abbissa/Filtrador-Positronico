@@ -9,8 +9,12 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import src.controller.Controller;
 import src.controller.FileManager;
 
@@ -48,7 +52,7 @@ public class BasicSettings extends JToolBar {
 
     private JLabel variance = new JLabel("Variance: ");
     private JLabel variance_scalar = new JLabel("Variance scalar: ");
-    private JLabel radius = new JLabel("Radius: ");
+    private JLabel radiusLabel = new JLabel("Radius: ");
     private JLabel threshold = new JLabel("Threshold: ");
     private JLabel scalar = new JLabel("Scalar: ");
     private JLabel phi = new JLabel("Phi: ");
@@ -56,13 +60,18 @@ public class BasicSettings extends JToolBar {
     //TODO: Convertir en sliders
     private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));
     private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));
-    //private JFormattedTextField radiusText = new JFormattedTextField("10");
-    //Rango de 1 a 40, distribución lineal.
+
+    private JFormattedTextField radiusText = new JFormattedTextField(RADIUS_DEFAULT);
     private JSlider radiusInput = new JSlider(RADIUS_MIN, RADIUS_MAX, RADIUS_DEFAULT);//Ejemplo de como se hace un slider
+
     private JFormattedTextField thresholdText = new JFormattedTextField(String.valueOf(THRESHOLD_DEFAULT));
     private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));
     private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));
 
+    //Botones set default
+    private JButton radiusSetDefaultButton = new JButton("Reset");
+
+    //Botones generales
     private JButton elegirFichero = new JButton("Seleccionar imagen");
     private JButton generateImageButton = new JButton("Generar");
     private JButton guardarImagen = new JButton("Guardar");
@@ -74,7 +83,7 @@ public class BasicSettings extends JToolBar {
     }
 
     private void initTools() {
-        GridLayout grid = new GridLayout(9, 2);
+        GridLayout grid = new GridLayout(0, 1);
 
         grid.setHgap(10);
         grid.setVgap(10);
@@ -86,13 +95,7 @@ public class BasicSettings extends JToolBar {
         this.add(variance_scalar);
         this.add(variance_scalarText);
 
-        this.add(radius);
-        radiusInput.setPreferredSize(new Dimension(140, 50));
-        radiusInput.setMajorTickSpacing(10);
-        radiusInput.setMinorTickSpacing(2);
-        radiusInput.setPaintTicks(true);
-        radiusInput.setPaintLabels(true);
-        this.add(radiusInput);
+        initRadius();
 
         this.add(threshold);
         this.add(thresholdText);
@@ -106,6 +109,8 @@ public class BasicSettings extends JToolBar {
         this.add(elegirFichero);
         this.add(generateImageButton);
         this.add(guardarImagen);
+
+        initDefaultButtonsListeners();
 
         guardarImagen.addActionListener(new ActionListener() {
 
@@ -137,7 +142,7 @@ public class BasicSettings extends JToolBar {
                 if (FileManager.getFILE() == null) {
                     JFrame jFrame = new JFrame();
                     JOptionPane.showMessageDialog(jFrame, "Seleccione una imagen antes de generar una nueva", "Aviso",
-                            JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 controller.generateDoG();
@@ -146,7 +151,65 @@ public class BasicSettings extends JToolBar {
         });
     }
 
-    // Getters
+    private void initRadius() {
+        JPanel radiusPanel = new JPanel();
+        radiusPanel.setBackground(DEFAULT_COLOR);
+        radiusPanel.setLayout(new GridLayout(1, 2));
+        radiusPanel.add(radiusLabel);
+        JPanel radiusSubPanel = new JPanel();
+            radiusSubPanel.setBackground(DEFAULT_COLOR);
+            radiusSubPanel.setLayout(new GridLayout(1, 0));
+            radiusSubPanel.add(radiusText);
+            radiusSubPanel.add(radiusSetDefaultButton);
+        radiusPanel.add(radiusSubPanel);
+        this.add(radiusPanel);
+
+        radiusInput.setPreferredSize(new Dimension(300, 50));
+        //radiusInput.setMajorTickSpacing(10);
+        //radiusInput.setMinorTickSpacing(1);
+        //radiusInput.setPaintTicks(true);
+        //radiusInput.setPaintLabels(true);
+        radiusInput.setBackground(DEFAULT_COLOR);
+
+        this.add(radiusInput);
+
+        //Listeners
+        radiusText.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    radiusInput.setValue(Integer.parseInt(radiusText.getText()));
+                }
+                catch (NumberFormatException e1) {
+                    JFrame jFrame = new JFrame();
+                    JOptionPane.showMessageDialog(jFrame, "El radio debe ser un número entero", "Aviso",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        });
+
+        radiusInput.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                radiusText.setText(String.valueOf(radiusInput.getValue()));
+            }
+        });
+    }
+
+    private void initDefaultButtonsListeners() {
+        radiusSetDefaultButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setDefaultRadius();
+            }
+
+        });
+    }
+
+    // Getters y setters
     public JFormattedTextField getVarianceText() {
         return varianceText;
     }
@@ -155,8 +218,13 @@ public class BasicSettings extends JToolBar {
         return variance_scalarText;
     }
 
-    public int getRadius() {
+    public int getRadiusValue() {
         return radiusInput.getValue();
+    }
+
+    public void setDefaultRadius() {
+        //radiusText.setText(String.valueOf(RADIUS_DEFAULT));//No es necesario: el listener del slider (radiusInput) ya lo hace
+        radiusInput.setValue(RADIUS_DEFAULT);
     }
 
     public JFormattedTextField getThresholdText() {
