@@ -46,6 +46,8 @@ public class BasicSettings extends JToolBar {
     private static final double PHI_MIN = -1;
     private static final double PHI_MAX = 1;
 
+    private static final int DECIMALS = 2;//Number of decimals used for double values
+
     //varianza, scalar de varianza, scalar y phi con distribución exponencial
 
     private Controller controller;
@@ -53,23 +55,26 @@ public class BasicSettings extends JToolBar {
     private JLabel variance = new JLabel("Variance: ");
     private JLabel variance_scalar = new JLabel("Variance scalar: ");
     private JLabel radiusLabel = new JLabel("Radius: ");
-    private JLabel threshold = new JLabel("Threshold: ");
+    private JLabel thresholdLabel = new JLabel("Threshold: ");
     private JLabel scalar = new JLabel("Scalar: ");
     private JLabel phi = new JLabel("Phi: ");
 
     //TODO: Convertir en sliders
-    private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));
-    private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));
+    private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));//Exponencial
+    private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));//Exponencial
 
     private JFormattedTextField radiusText = new JFormattedTextField(RADIUS_DEFAULT);
-    private JSlider radiusInput = new JSlider(RADIUS_MIN, RADIUS_MAX, RADIUS_DEFAULT);//Ejemplo de como se hace un slider
+    private JSlider radiusSlider = new JSlider(RADIUS_MIN, RADIUS_MAX, RADIUS_DEFAULT);
 
     private JFormattedTextField thresholdText = new JFormattedTextField(String.valueOf(THRESHOLD_DEFAULT));
-    private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));
-    private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));
+    private JSlider thresholdSlider = new JSlider((int)THRESHOLD_MIN * (int)Math.pow(10, DECIMALS), (int)THRESHOLD_MAX * (int)Math.pow(10, DECIMALS), (int)THRESHOLD_DEFAULT * (int)Math.pow(10, DECIMALS));
+
+    private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));//Exponencial
+    private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));//Exponencial
 
     //Botones set default
     private JButton radiusSetDefaultButton = new JButton("Reset");
+    private JButton thresholdSetDefaultButton = new JButton("Reset");
 
     //Botones generales
     private JButton elegirFichero = new JButton("Seleccionar imagen");
@@ -97,8 +102,7 @@ public class BasicSettings extends JToolBar {
 
         initRadius();
 
-        this.add(threshold);
-        this.add(thresholdText);
+        initThreshold();
 
         this.add(scalar);
         this.add(scalarText);
@@ -164,14 +168,14 @@ public class BasicSettings extends JToolBar {
         radiusPanel.add(radiusSubPanel);
         this.add(radiusPanel);
 
-        radiusInput.setPreferredSize(new Dimension(300, 50));
+        radiusSlider.setPreferredSize(new Dimension(300, 50));
         //radiusInput.setMajorTickSpacing(10);
         //radiusInput.setMinorTickSpacing(1);
         //radiusInput.setPaintTicks(true);
         //radiusInput.setPaintLabels(true);
-        radiusInput.setBackground(DEFAULT_COLOR);
+        radiusSlider.setBackground(DEFAULT_COLOR);
 
-        this.add(radiusInput);
+        this.add(radiusSlider);
 
         //Listeners
         radiusText.addActionListener(new ActionListener() {
@@ -179,7 +183,7 @@ public class BasicSettings extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    radiusInput.setValue(Integer.parseInt(radiusText.getText()));
+                    radiusSlider.setValue(Integer.parseInt(radiusText.getText()));
                 }
                 catch (NumberFormatException e1) {
                     JFrame jFrame = new JFrame();
@@ -190,10 +194,53 @@ public class BasicSettings extends JToolBar {
 
         });
 
-        radiusInput.addChangeListener(new ChangeListener() {
+        radiusSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                radiusText.setText(String.valueOf(radiusInput.getValue()));
+                radiusText.setText(String.valueOf(radiusSlider.getValue()));
+            }
+        });
+    }
+
+    private void initThreshold() {
+        JPanel thresholdPanel = new JPanel();
+        thresholdPanel.setBackground(DEFAULT_COLOR);
+        thresholdPanel.setLayout(new GridLayout(1, 2));
+        thresholdPanel.add(thresholdLabel);
+        JPanel thresholdSubPanel = new JPanel();
+            thresholdSubPanel.setBackground(DEFAULT_COLOR);
+            thresholdSubPanel.setLayout(new GridLayout(1, 0));
+            thresholdSubPanel.add(thresholdText);
+            thresholdSubPanel.add(thresholdSetDefaultButton);
+        thresholdPanel.add(thresholdSubPanel);
+        this.add(thresholdPanel);
+
+        thresholdSlider.setPreferredSize(new Dimension(300, 50));
+        radiusSlider.setBackground(DEFAULT_COLOR);
+
+        this.add(thresholdSlider);
+
+        //Listeners
+        thresholdText.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    thresholdSlider.setValue((int)(Double.parseDouble(thresholdText.getText().replace(',', '.')) * Math.pow(10, DECIMALS)));
+                }
+                catch (NumberFormatException e1) {
+                    JFrame jFrame = new JFrame();
+                    JOptionPane.showMessageDialog(jFrame, "El umbral (threshold) debe ser un número", "Aviso",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        });
+
+        thresholdSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
             }
         });
     }
@@ -205,7 +252,15 @@ public class BasicSettings extends JToolBar {
             public void actionPerformed(ActionEvent e) {
                 setDefaultRadius();
             }
+        });
 
+        thresholdSetDefaultButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                thresholdText.setText(String.valueOf(THRESHOLD_DEFAULT));
+                thresholdSlider.setValue((int)(THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)));
+            }
         });
     }
 
@@ -219,12 +274,12 @@ public class BasicSettings extends JToolBar {
     }
 
     public int getRadiusValue() {
-        return radiusInput.getValue();
+        return radiusSlider.getValue();
     }
 
     public void setDefaultRadius() {
         //radiusText.setText(String.valueOf(RADIUS_DEFAULT));//No es necesario: el listener del slider (radiusInput) ya lo hace
-        radiusInput.setValue(RADIUS_DEFAULT);
+        radiusSlider.setValue(RADIUS_DEFAULT);
     }
 
     public JFormattedTextField getThresholdText() {
