@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
+
+import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -14,6 +17,7 @@ import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultFormatter;
 
 import src.controller.Controller;
 import src.controller.FileManager;
@@ -110,11 +114,147 @@ public class BasicSettings extends JToolBar {
         this.add(phi);
         this.add(phiText);
 
-        this.add(elegirFichero);
-        this.add(generateImageButton);
-        this.add(guardarImagen);
-
         initDefaultButtonsListeners();
+
+        //Botones generales
+        initGeneralButtons();
+    }
+
+    private void initRadius() {
+        JPanel radiusPanel = new JPanel();
+        radiusPanel.setBackground(DEFAULT_COLOR);
+        radiusPanel.setLayout(new GridLayout(1, 2));
+        radiusPanel.add(radiusLabel);
+        JPanel radiusSubPanel = new JPanel();
+            radiusSubPanel.setBackground(DEFAULT_COLOR);
+            radiusSubPanel.setLayout(new GridLayout(1, 0));
+            radiusSubPanel.add(radiusText);
+            radiusSubPanel.add(radiusSetDefaultButton);
+        radiusPanel.add(radiusSubPanel);
+        this.add(radiusPanel);
+
+        radiusSlider.setPreferredSize(new Dimension(300, 50));
+        //radiusInput.setMajorTickSpacing(10);
+        //radiusInput.setMinorTickSpacing(1);
+        //radiusInput.setPaintTicks(true);
+        //radiusInput.setPaintLabels(true);
+        radiusSlider.setBackground(DEFAULT_COLOR);
+
+        this.add(radiusSlider);
+
+        //Properties
+        DefaultFormatter formatter = new DefaultFormatter();
+        formatter.setOverwriteMode(false);
+        radiusText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(formatter));
+
+        //Listeners
+        radiusText.setDropMode(DropMode.INSERT);
+        radiusText.addFocusListener(new FocusListener() {
+                
+                @Override
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    try {
+                        radiusSlider.setValue(Integer.parseInt(radiusText.getText()));
+                    }
+                    catch (NumberFormatException e1) {
+                        JFrame jFrame = new JFrame();
+                        JOptionPane.showMessageDialog(jFrame, "El radio debe ser un número entero", "Aviso",
+                                JOptionPane.WARNING_MESSAGE);
+                        radiusText.setText(String.valueOf(radiusSlider.getValue()));
+                    }
+                }
+    
+                @Override
+                public void focusGained(java.awt.event.FocusEvent e) {
+                }
+        });
+
+        radiusSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                radiusText.setText(String.valueOf(radiusSlider.getValue()));
+            }
+        });
+    }
+
+    private void initThreshold() {
+        JPanel thresholdPanel = new JPanel();
+        thresholdPanel.setBackground(DEFAULT_COLOR);
+        thresholdPanel.setLayout(new GridLayout(1, 2));
+        thresholdPanel.add(thresholdLabel);
+        JPanel thresholdSubPanel = new JPanel();
+            thresholdSubPanel.setBackground(DEFAULT_COLOR);
+            thresholdSubPanel.setLayout(new GridLayout(1, 0));
+            thresholdSubPanel.add(thresholdText);
+            thresholdSubPanel.add(thresholdSetDefaultButton);
+        thresholdPanel.add(thresholdSubPanel);
+        this.add(thresholdPanel);
+
+        thresholdSlider.setPreferredSize(new Dimension(300, 50));
+        thresholdSlider.setBackground(DEFAULT_COLOR);
+
+        this.add(thresholdSlider);
+
+        //Properties
+        DefaultFormatter formatter = new DefaultFormatter();
+        formatter.setOverwriteMode(false);
+        thresholdText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(formatter));
+
+        //Listeners
+        thresholdText.addFocusListener(new FocusListener() {
+                
+                @Override
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    try {
+                        thresholdSlider.setValue((int)(Double.parseDouble(thresholdText.getText().replace(',', '.')) * Math.pow(10, DECIMALS)));
+                    }
+                    catch (NumberFormatException e1) {
+                        JFrame jFrame = new JFrame();
+                        JOptionPane.showMessageDialog(jFrame, "El umbral (threshold) debe ser un número", "Aviso",
+                                JOptionPane.WARNING_MESSAGE);
+                        thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
+                    }
+                }
+    
+                @Override
+                public void focusGained(java.awt.event.FocusEvent e) {
+                }
+        });
+
+        thresholdSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
+            }
+        });
+    }
+
+    private void initDefaultButtonsListeners() {
+        radiusSetDefaultButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setDefaultRadius();
+            }
+        });
+
+        thresholdSetDefaultButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setDefaultThreshold();
+            }
+        });
+    }
+
+    private void initGeneralButtons() {
+        JPanel generalButtonsPanel1 = new JPanel();
+        generalButtonsPanel1.setBackground(DEFAULT_COLOR);
+        generalButtonsPanel1.setLayout(new GridLayout(1, 2));
+        generalButtonsPanel1.add(elegirFichero);
+        generalButtonsPanel1.add(generateImageButton);
+        this.add(generalButtonsPanel1);
+        this.add(guardarImagen);
 
         guardarImagen.addActionListener(new ActionListener() {
 
@@ -155,115 +295,6 @@ public class BasicSettings extends JToolBar {
         });
     }
 
-    private void initRadius() {
-        JPanel radiusPanel = new JPanel();
-        radiusPanel.setBackground(DEFAULT_COLOR);
-        radiusPanel.setLayout(new GridLayout(1, 2));
-        radiusPanel.add(radiusLabel);
-        JPanel radiusSubPanel = new JPanel();
-            radiusSubPanel.setBackground(DEFAULT_COLOR);
-            radiusSubPanel.setLayout(new GridLayout(1, 0));
-            radiusSubPanel.add(radiusText);
-            radiusSubPanel.add(radiusSetDefaultButton);
-        radiusPanel.add(radiusSubPanel);
-        this.add(radiusPanel);
-
-        radiusSlider.setPreferredSize(new Dimension(300, 50));
-        //radiusInput.setMajorTickSpacing(10);
-        //radiusInput.setMinorTickSpacing(1);
-        //radiusInput.setPaintTicks(true);
-        //radiusInput.setPaintLabels(true);
-        radiusSlider.setBackground(DEFAULT_COLOR);
-
-        this.add(radiusSlider);
-
-        //Listeners
-        radiusText.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    radiusSlider.setValue(Integer.parseInt(radiusText.getText()));
-                }
-                catch (NumberFormatException e1) {
-                    JFrame jFrame = new JFrame();
-                    JOptionPane.showMessageDialog(jFrame, "El radio debe ser un número entero", "Aviso",
-                            JOptionPane.WARNING_MESSAGE);
-                }
-            }
-
-        });
-
-        radiusSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                radiusText.setText(String.valueOf(radiusSlider.getValue()));
-            }
-        });
-    }
-
-    private void initThreshold() {
-        JPanel thresholdPanel = new JPanel();
-        thresholdPanel.setBackground(DEFAULT_COLOR);
-        thresholdPanel.setLayout(new GridLayout(1, 2));
-        thresholdPanel.add(thresholdLabel);
-        JPanel thresholdSubPanel = new JPanel();
-            thresholdSubPanel.setBackground(DEFAULT_COLOR);
-            thresholdSubPanel.setLayout(new GridLayout(1, 0));
-            thresholdSubPanel.add(thresholdText);
-            thresholdSubPanel.add(thresholdSetDefaultButton);
-        thresholdPanel.add(thresholdSubPanel);
-        this.add(thresholdPanel);
-
-        thresholdSlider.setPreferredSize(new Dimension(300, 50));
-        radiusSlider.setBackground(DEFAULT_COLOR);
-
-        this.add(thresholdSlider);
-
-        //Listeners
-        thresholdText.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    thresholdSlider.setValue((int)(Double.parseDouble(thresholdText.getText().replace(',', '.')) * Math.pow(10, DECIMALS)));
-                }
-                catch (NumberFormatException e1) {
-                    JFrame jFrame = new JFrame();
-                    JOptionPane.showMessageDialog(jFrame, "El umbral (threshold) debe ser un número", "Aviso",
-                            JOptionPane.WARNING_MESSAGE);
-                }
-            }
-
-        });
-
-        thresholdSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
-            }
-        });
-    }
-
-    private void initDefaultButtonsListeners() {
-        radiusSetDefaultButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setDefaultRadius();
-            }
-        });
-
-        thresholdSetDefaultButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                thresholdText.setText(String.valueOf(THRESHOLD_DEFAULT));
-                thresholdSlider.setValue((int)(THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)));
-            }
-        });
-    }
-
     // Getters y setters
     public JFormattedTextField getVarianceText() {
         return varianceText;
@@ -284,6 +315,11 @@ public class BasicSettings extends JToolBar {
 
     public JFormattedTextField getThresholdText() {
         return thresholdText;
+    }
+
+    public void setDefaultThreshold() {
+        //thresholdText.setText(String.valueOf(THRESHOLD_DEFAULT));//No es necesario: el listener del slider (thresholdInput) ya lo hace
+        thresholdSlider.setValue((int)(THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)));
     }
 
     public JFormattedTextField getScalarText() {

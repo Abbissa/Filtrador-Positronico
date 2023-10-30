@@ -1,6 +1,7 @@
 package src.view;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 
 import javax.swing.JFrame;
 import src.controller.Controller;
@@ -18,16 +19,24 @@ public class GUI extends JFrame {
 
     public GUI() {
         super(APP_NAME);
-        setSize(900, 550);
+        setSize(1200, 650);
+        setMinimumSize(new java.awt.Dimension(850, 400));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.controller = new Controller(this);
 
         this.setLayout(new BorderLayout());
 
+
         this.basicSettings = new BasicSettings(controller);
+        basicSettings.setFloatable(false);
+        basicSettings.setMargin(new Insets(0, 10, 5, 10));
+        
         this.imagesViewer = new ImagesViewer();
+
         this.colorSettings = new ColorSettings(controller);
         colorSettings.setFloatable(false);
+        colorSettings.setMargin(new Insets(0, 10, 5, 10));
+
 
         this.add(basicSettings, BorderLayout.WEST);
 
