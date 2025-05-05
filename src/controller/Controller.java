@@ -41,24 +41,49 @@ public class Controller {
                     double var = Float.parseFloat(gui.getBasicSettings().getVarianceText().getText());
                     double var_sca = Float.parseFloat(gui.getBasicSettings().getVariance_scalarText().getText());
                     int rad = gui.getBasicSettings().getRadiusValue();
-                    double th = Float.parseFloat(gui.getBasicSettings().getThresholdText().getText());
+                    double th = Float.parseFloat(gui.getBasicSettings().getThresholdValue());
                     double scalar = Float.parseFloat(gui.getBasicSettings().getScalarText().getText());
                     double phi = Float.parseFloat(gui.getBasicSettings().getPhiText().getText());
-                    double thColor = Double.parseDouble(gui.getColorSettings().getThresholdColorText().getText());
+                    boolean invertir = gui.getBasicSettings().getInvertir().isSelected();
 
+                    double thColor = Double.parseDouble(gui.getColorSettings().getThresholdColorText().getText());
                     String defaultValue = (String) gui.getColorSettings().getBgList().getSelectedItem();
                     Color bgColor = gui.getColorSettings().getColor();
-                    boolean invertir = gui.getColorSettings().getChecBoxInvertir().isSelected();
+                    boolean invertirColor = gui.getColorSettings().getChecBoxInvertir().isSelected() ? true : false;
                     Image loading = Toolkit.getDefaultToolkit().getImage("Loading.gif");
                     gui.getImagesViewer().setImageEdit(loading);
 
                     BufferedImage bf = javax.imageio.ImageIO.read(FileManager.getFILE());
                     BufferedImage res = null;
                     if (mode.equals("DoG"))
-                        res = filter.DoG(bf, var, var_sca, rad, th, scalar, phi);
-                    else
+                        res = filter.DoG(bf, var, var_sca, rad, th, scalar, phi, invertir);
+                    else if (mode.equals("Multiply")) {
+                        res = filter.DoG(bf, var, var_sca, rad, th, scalar, phi, invertir);
+                        for (int i = 0; i < res.getWidth(); i++) {
+                            for (int j = 0; j < res.getHeight(); j++) {
+                                Color cOrig = new Color(bf.getRGB(i, j));
+                                Color cRes = new Color(res.getRGB(i, j));
+                                int r = cOrig.getRed() * cRes.getRed() / 255;
+                                int g = cOrig.getGreen() * cRes.getGreen() / 255;
+                                int b = cOrig.getBlue() * cRes.getBlue() / 255;
+                                int a = cOrig.getAlpha();
+                                Color newColor = new Color(r, g, b, a);
+                                res.setRGB(i, j, newColor.getRGB());
+                            }
+                        }
+
+                    } else if (mode.equals("Weird")) {
+                        res = filter.badDoG(bf, var, var_sca, rad, th, scalar, phi, invertir);
+                    } else if (mode.equals("EdgeFlow")) {
+                        res = filter.edgeTangentFlow(bf);
+
+                    } else if (mode.equals("Kuwahara")) {
+                        res = filter.kuwahara(bf, 10);
+                    } else if (mode.equals("ExtendedDoG")) {
+                        res = filter.extendedDoG(bf);
+                    } else
                         res = filter.DoGGradient(bf, var, var_sca, rad, th, thColor, scalar, phi, colors, defaultValue,
-                                bgColor, invertir);
+                                bgColor, invertirColor);
                     Image img = getImageResized(res, MAX_IMG_WIDTH, MAX_IMG_HEIGHT);
 
                     gui.getImagesViewer().setImageEdit(img);
@@ -91,8 +116,7 @@ public class Controller {
         Image img = gui.getImagesViewer().getImageEdit();
         if (img != null) {
             FileManager.saveImage(img);
-        }
-        else {
+        } else {
             throw new NullPointerException("No image to save");
         }
     }

@@ -1,5 +1,6 @@
 package src.view;
 
+import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.DropMode;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -50,9 +52,9 @@ public class BasicSettings extends JToolBar {
     private static final double PHI_MIN = -1;
     private static final double PHI_MAX = 1;
 
-    private static final int DECIMALS = 2;//Number of decimals used for double values
+    private static final int DECIMALS = 2;// Number of decimals used for double values
 
-    //varianza, scalar de varianza, scalar y phi con distribución exponencial
+    // varianza, scalar de varianza, scalar y phi con distribución exponencial
 
     private Controller controller;
 
@@ -63,24 +65,26 @@ public class BasicSettings extends JToolBar {
     private JLabel scalar = new JLabel("Scalar: ");
     private JLabel phi = new JLabel("Phi: ");
 
-    //TODO: Convertir en sliders
-    private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));//Exponencial
-    private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));//Exponencial
+    // TODO: Convertir en sliders
+    private JFormattedTextField varianceText = new JFormattedTextField(String.valueOf(VARIANCE_DEFAULT));// Exponencial
+    private JFormattedTextField variance_scalarText = new JFormattedTextField(String.valueOf(VARIANCE_SCALAR_DEFAULT));// Exponencial
 
-    private JFormattedTextField radiusText = new JFormattedTextField(RADIUS_DEFAULT);
+    private JLabel radiusValue = new JLabel(String.valueOf(RADIUS_DEFAULT));
     private JSlider radiusSlider = new JSlider(RADIUS_MIN, RADIUS_MAX, RADIUS_DEFAULT);
 
-    private JFormattedTextField thresholdText = new JFormattedTextField(String.valueOf(THRESHOLD_DEFAULT));
-    private JSlider thresholdSlider = new JSlider((int)THRESHOLD_MIN * (int)Math.pow(10, DECIMALS), (int)THRESHOLD_MAX * (int)Math.pow(10, DECIMALS), (int)THRESHOLD_DEFAULT * (int)Math.pow(10, DECIMALS));
+    private JLabel thresholdValue = new JLabel(String.valueOf(THRESHOLD_DEFAULT));
+    private JSlider thresholdSlider = new JSlider((int) THRESHOLD_MIN * (int) Math.pow(10, DECIMALS),
+            (int) THRESHOLD_MAX * (int) Math.pow(10, DECIMALS), (int) THRESHOLD_DEFAULT * (int) Math.pow(10, DECIMALS));
 
-    private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));//Exponencial
-    private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));//Exponencial
+    private JFormattedTextField scalarText = new JFormattedTextField(String.valueOf(SCALAR_DEFAULT));// Exponencial
+    private JFormattedTextField phiText = new JFormattedTextField(String.valueOf(PHI_DEFAULT));// Exponencial
 
-    //Botones set default
+    // Botones set default
     private JButton radiusSetDefaultButton = new JButton("Reset");
     private JButton thresholdSetDefaultButton = new JButton("Reset");
 
-    //Botones generales
+    private JCheckBox invertir = new JCheckBox("Invertir Perro");
+    // Botones generales
     private JButton elegirFichero = new JButton("Seleccionar imagen");
     private JButton generateImageButton = new JButton("Generar");
     private JButton guardarImagen = new JButton("Guardar");
@@ -92,139 +96,119 @@ public class BasicSettings extends JToolBar {
     }
 
     private void initTools() {
-        GridLayout grid = new GridLayout(0, 1);
+        this.setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS)); // Use BoxLayout for vertical
+                                                                                       // alignment
+        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the panel
 
-        grid.setHgap(10);
-        grid.setVgap(10);
-        this.setLayout(grid);
-
-        this.add(variance);
-        this.add(varianceText);
-
-        this.add(variance_scalar);
-        this.add(variance_scalarText);
-
-        initRadius();
-
-        initThreshold();
-
-        this.add(scalar);
-        this.add(scalarText);
-
-        this.add(phi);
-        this.add(phiText);
-
+        addField(variance, varianceText);
+        addField(variance_scalar, variance_scalarText);
+        initFieldWithSlider(radiusLabel, radiusValue, radiusSlider, radiusSetDefaultButton, RADIUS_DEFAULT, RADIUS_MIN,
+                RADIUS_MAX, true);
+        initFieldWithSlider(thresholdLabel, thresholdValue, thresholdSlider, thresholdSetDefaultButton,
+                (int) (THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)),
+                (int) (THRESHOLD_MIN * Math.pow(10, DECIMALS)),
+                (int) (THRESHOLD_MAX * Math.pow(10, DECIMALS)), false);
+        addField(scalar, scalarText);
+        addField(phi, phiText);
         initDefaultButtonsListeners();
-
-        //Botones generales
+        this.add(javax.swing.Box.createVerticalStrut(10)); // Add vertical space
+        this.add(invertir);
         initGeneralButtons();
     }
 
-    private void initRadius() {
-        JPanel radiusPanel = new JPanel();
-        radiusPanel.setBackground(DEFAULT_COLOR);
-        radiusPanel.setLayout(new GridLayout(1, 2));
-        radiusPanel.add(radiusLabel);
-        JPanel radiusSubPanel = new JPanel();
-            radiusSubPanel.setBackground(DEFAULT_COLOR);
-            radiusSubPanel.setLayout(new GridLayout(1, 0));
-            radiusSubPanel.add(radiusText);
-            radiusSubPanel.add(radiusSetDefaultButton);
-        radiusPanel.add(radiusSubPanel);
-        this.add(radiusPanel);
-
-        radiusSlider.setPreferredSize(new Dimension(300, 50));
-        //radiusInput.setMajorTickSpacing(10);
-        //radiusInput.setMinorTickSpacing(1);
-        //radiusInput.setPaintTicks(true);
-        //radiusInput.setPaintLabels(true);
-        radiusSlider.setBackground(DEFAULT_COLOR);
-
-        this.add(radiusSlider);
-
-        //Properties
-        DefaultFormatter formatter = new DefaultFormatter();
-        formatter.setOverwriteMode(false);
-        radiusText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(formatter));
-
-        //Listeners
-        radiusText.setDropMode(DropMode.INSERT);
-        radiusText.addFocusListener(new FocusListener() {
-                
-                @Override
-                public void focusLost(java.awt.event.FocusEvent e) {
-                    try {
-                        radiusSlider.setValue(Integer.parseInt(radiusText.getText()));
-                    }
-                    catch (NumberFormatException e1) {
-                        JFrame jFrame = new JFrame();
-                        JOptionPane.showMessageDialog(jFrame, "El radio debe ser un número entero", "Aviso",
-                                JOptionPane.WARNING_MESSAGE);
-                        radiusText.setText(String.valueOf(radiusSlider.getValue()));
-                    }
-                }
-    
-                @Override
-                public void focusGained(java.awt.event.FocusEvent e) {
-                }
-        });
-
-        radiusSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                radiusText.setText(String.valueOf(radiusSlider.getValue()));
-            }
-        });
+    private void addField(JLabel label, JFormattedTextField field) {
+        JPanel variancePanel = new JPanel();
+        variancePanel.setLayout(new GridLayout(1, 2, 5, 0)); // Horizontal layout with spacing
+        variancePanel.setBackground(DEFAULT_COLOR);
+        variancePanel.setPreferredSize(new Dimension(200, 30)); // Fixed size
+        variancePanel.setMaximumSize(new Dimension(200, 30));
+        variancePanel.add(label);
+        variancePanel.add(field);
+        variancePanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add vertical spacing
+        this.add(variancePanel);
     }
 
-    private void initThreshold() {
-        JPanel thresholdPanel = new JPanel();
-        thresholdPanel.setBackground(DEFAULT_COLOR);
-        thresholdPanel.setLayout(new GridLayout(1, 2));
-        thresholdPanel.add(thresholdLabel);
-        JPanel thresholdSubPanel = new JPanel();
-            thresholdSubPanel.setBackground(DEFAULT_COLOR);
-            thresholdSubPanel.setLayout(new GridLayout(1, 0));
-            thresholdSubPanel.add(thresholdText);
-            thresholdSubPanel.add(thresholdSetDefaultButton);
-        thresholdPanel.add(thresholdSubPanel);
-        this.add(thresholdPanel);
+    private void initFieldWithSlider(JLabel label, JLabel textField, JSlider slider, JButton resetButton,
+            int defaultValue, int minValue, int maxValue, boolean isInteger) {
+        JPanel panel = new JPanel();
+        panel.setBackground(DEFAULT_COLOR);
+        panel.setLayout(new GridLayout(1, 2, 5, 0));
+        panel.setPreferredSize(new Dimension(200, 30)); // Fixed size
+        panel.setMaximumSize(new Dimension(200, 30));
+        panel.setBackground(DEFAULT_COLOR);
 
-        thresholdSlider.setPreferredSize(new Dimension(300, 50));
-        thresholdSlider.setBackground(DEFAULT_COLOR);
+        panel.add(label);
 
-        this.add(thresholdSlider);
+        JPanel subPanel = new JPanel();
+        subPanel.setBackground(DEFAULT_COLOR);
+        subPanel.setLayout(new GridLayout(1, 2, 5, 0));
+        subPanel.setPreferredSize(new Dimension(200, 30)); // Fixed size
+        subPanel.setMaximumSize(new Dimension(200, 30));
+        subPanel.setBackground(DEFAULT_COLOR);
+        textField.setPreferredSize(new Dimension(30, 30)); // Fixed size
+        textField.setMaximumSize(new Dimension(30, 30));
+        textField.setBackground(DEFAULT_COLOR);
 
-        //Properties
+        subPanel.add(textField);
+        resetButton.setPreferredSize(new Dimension(180, 30)); // Fixed size
+        resetButton.setMaximumSize(new Dimension(180, 30));
+        resetButton.setText("Reset");
+        resetButton.setFocusable(false);
+        resetButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        resetButton.setSize(new Dimension(180, 30)); // Fixed size
+        subPanel.add(resetButton);
+        panel.add(subPanel);
+        this.add(panel);
+
+        slider.setMinimum(minValue);
+        slider.setMaximum(maxValue);
+        slider.setValue(defaultValue);
+        slider.setPreferredSize(new Dimension(300, 50));
+        slider.setBackground(DEFAULT_COLOR);
+        this.add(slider);
+
         DefaultFormatter formatter = new DefaultFormatter();
         formatter.setOverwriteMode(false);
-        thresholdText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(formatter));
+        // textField.setFormatterFactory(new
+        // javax.swing.text.DefaultFormatterFactory(formatter));
 
-        //Listeners
-        thresholdText.addFocusListener(new FocusListener() {
-                
-                @Override
-                public void focusLost(java.awt.event.FocusEvent e) {
-                    try {
-                        thresholdSlider.setValue((int)(Double.parseDouble(thresholdText.getText().replace(',', '.')) * Math.pow(10, DECIMALS)));
+        // textField.setDropMode(DropMode.INSERT);
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                try {
+                    if (isInteger) {
+                        slider.setValue(Integer.parseInt(textField.getText()));
+                    } else {
+                        slider.setValue((int) (Double.parseDouble(textField.getText().replace(',', '.'))
+                                * Math.pow(10, DECIMALS)));
                     }
-                    catch (NumberFormatException e1) {
-                        JFrame jFrame = new JFrame();
-                        JOptionPane.showMessageDialog(jFrame, "El umbral (threshold) debe ser un número", "Aviso",
-                                JOptionPane.WARNING_MESSAGE);
-                        thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
-                    }
+                } catch (NumberFormatException e1) {
+                    JFrame jFrame = new JFrame();
+                    JOptionPane.showMessageDialog(jFrame, "El valor debe ser un número válido", "Aviso",
+                            JOptionPane.WARNING_MESSAGE);
+                    textField.setText(isInteger ? String.valueOf(slider.getValue())
+                            : String.valueOf((double) slider.getValue() / Math.pow(10, DECIMALS)));
                 }
-    
-                @Override
-                public void focusGained(java.awt.event.FocusEvent e) {
-                }
+            }
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+            }
         });
 
-        thresholdSlider.addChangeListener(new ChangeListener() {
+        slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                thresholdText.setText(String.valueOf((double)thresholdSlider.getValue() / Math.pow(10, DECIMALS)));
+                textField.setText(isInteger ? String.valueOf(slider.getValue())
+                        : String.valueOf((double) slider.getValue() / Math.pow(10, DECIMALS)));
+            }
+        });
+
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                slider.setValue(defaultValue);
             }
         });
     }
@@ -251,6 +235,14 @@ public class BasicSettings extends JToolBar {
         JPanel generalButtonsPanel1 = new JPanel();
         generalButtonsPanel1.setBackground(DEFAULT_COLOR);
         generalButtonsPanel1.setLayout(new GridLayout(1, 2));
+        generalButtonsPanel1.setPreferredSize(new Dimension(200, 30)); // Fixed size
+        generalButtonsPanel1.setMaximumSize(new Dimension(200, 30));
+
+        elegirFichero.setPreferredSize(new Dimension(100, 30)); // Fixed size
+        elegirFichero.setMaximumSize(new Dimension(100, 30));
+        generateImageButton.setPreferredSize(new Dimension(100, 30)); // Fixed size
+        generateImageButton.setMaximumSize(new Dimension(100, 30));
+
         generalButtonsPanel1.add(elegirFichero);
         generalButtonsPanel1.add(generateImageButton);
         this.add(generalButtonsPanel1);
@@ -309,17 +301,15 @@ public class BasicSettings extends JToolBar {
     }
 
     public void setDefaultRadius() {
-        //radiusText.setText(String.valueOf(RADIUS_DEFAULT));//No es necesario: el listener del slider (radiusInput) ya lo hace
+        // radiusText.setText(String.valueOf(RADIUS_DEFAULT));//No es necesario: el
+        // listener del slider (radiusInput) ya lo hace
         radiusSlider.setValue(RADIUS_DEFAULT);
     }
 
-    public JFormattedTextField getThresholdText() {
-        return thresholdText;
-    }
-
     public void setDefaultThreshold() {
-        //thresholdText.setText(String.valueOf(THRESHOLD_DEFAULT));//No es necesario: el listener del slider (thresholdInput) ya lo hace
-        thresholdSlider.setValue((int)(THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)));
+        // thresholdText.setText(String.valueOf(THRESHOLD_DEFAULT));//No es necesario:
+        // el listener del slider (thresholdInput) ya lo hace
+        thresholdSlider.setValue((int) (THRESHOLD_DEFAULT * Math.pow(10, DECIMALS)));
     }
 
     public JFormattedTextField getScalarText() {
@@ -329,4 +319,13 @@ public class BasicSettings extends JToolBar {
     public JFormattedTextField getPhiText() {
         return phiText;
     }
+
+    public String getThresholdValue() {
+        return thresholdValue.getText();
+    }
+
+    public JCheckBox getInvertir() {
+        return invertir;
+    }
+
 }

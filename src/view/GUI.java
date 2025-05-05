@@ -17,6 +17,11 @@ public class GUI extends JFrame {
 
     private ColorSettings colorSettings;
 
+    public static void main(String[] args) {
+        GUI v = new GUI();
+        v.setVisible(true);
+    }
+
     public GUI() {
         super(APP_NAME);
         setSize(1200, 650);
@@ -26,28 +31,21 @@ public class GUI extends JFrame {
 
         this.setLayout(new BorderLayout());
 
-
         this.basicSettings = new BasicSettings(controller);
         basicSettings.setFloatable(false);
-        basicSettings.setMargin(new Insets(0, 10, 5, 10));
-        
+        basicSettings.setMargin(new Insets(0, 5, 5, 5));
+
         this.imagesViewer = new ImagesViewer();
 
         this.colorSettings = new ColorSettings(controller);
         colorSettings.setFloatable(false);
         colorSettings.setMargin(new Insets(0, 10, 5, 10));
 
-
         this.add(basicSettings, BorderLayout.WEST);
 
         this.add(imagesViewer, BorderLayout.CENTER);
 
         this.add(colorSettings, BorderLayout.EAST);
-    }
-
-    public static void main(String[] args) {
-        GUI v = new GUI();
-        v.setVisible(true);
     }
 
     // Getters

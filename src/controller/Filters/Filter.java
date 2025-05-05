@@ -119,7 +119,7 @@ public class Filter implements FilterInterface {
 
     public BufferedImage DoG(BufferedImage bf,
             double variance, double variance_scalar, int radius, double threshold,
-            double scalar, double phi) throws IOException {
+            double scalar, double phi, boolean invertir) throws IOException {
         BufferedImage img1 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         BufferedImage img2 = new BufferedImage(bf.getWidth(), bf.getHeight(), BufferedImage.TYPE_INT_RGB);
         String method = "gaussianBlur";
@@ -415,6 +415,25 @@ public class Filter implements FilterInterface {
             throws IOException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'DoGGradient'");
+    }
+
+    @Override
+    public BufferedImage badDoG(BufferedImage bf, double variance, double variance_scalar, int radius, double threshold,
+            double scalar, double phi, boolean invertir) throws IOException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'badDoG'");
+    }
+
+    @Override
+    public BufferedImage edgeTangentFlow(BufferedImage bf) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'edgeTangentFlow'");
+    }
+
+    @Override
+    public BufferedImage kuwahara(BufferedImage bf, int radius) throws IOException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'kuwahara'");
     }
 
 }

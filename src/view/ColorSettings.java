@@ -44,7 +44,7 @@ public class ColorSettings extends JToolBar {
 
         setGridLayout();
 
-        //nColores
+        // nColores
         JLabel n_colorsText = new JLabel("Nº colors: ");
         n_colors = new JFormattedTextField("8");
 
@@ -58,7 +58,7 @@ public class ColorSettings extends JToolBar {
         this.add(thresholdColor);
         this.add(thresholdColorText);
 
-        //Invertir colores
+        // Invertir colores
         checBoxInvertir = new JCheckBox("Invertir colores");
         this.add(checBoxInvertir);
         this.addSeparator();
@@ -107,11 +107,11 @@ public class ColorSettings extends JToolBar {
     private void colorBG() {
         String[] bgModes = { "color", "original", "DoG", "Color DoG" };
         bgList = new JComboBox<String>(bgModes);
-        //bgList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // bgList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JLabel bgMode = new JLabel("Background mode: ");
         this.add(bgMode);
         this.add(bgList);
-        //this.add(new JScrollPane(bgList));
+        // this.add(new JScrollPane(bgList));
 
         defaultValue = new JButton("Seleccionar para el fondo");
 
@@ -127,12 +127,15 @@ public class ColorSettings extends JToolBar {
     }
 
     private void colorMode() {
-        String[] colorModes = { "DoG", "monochromatic", "complementary", "analagous", "triadic complementary",
+        String[] colorModes = { "DoG", "Multiply", "Weird", "ExtendedDoG", "EdgeFlow", "Kuwahara", "monochromatic",
+                "complementary",
+                "analagous",
+                "triadic complementary",
                 "tetradic complementary" };
         JLabel colorMode = new JLabel("Color mode: ");
-        
+
         this.add(colorMode);
-        //Añadir en formato desplegable
+        // Añadir en formato desplegable
         list = new JComboBox<>(colorModes);
         list.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
