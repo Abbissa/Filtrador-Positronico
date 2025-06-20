@@ -436,4 +436,10 @@ public class Filter implements FilterInterface {
         throw new UnsupportedOperationException("Unimplemented method 'kuwahara'");
     }
 
+    @Override
+    public BufferedImage extendedDoG(BufferedImage bf) throws IOException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'extendedDoG'");
+    }
+
 }

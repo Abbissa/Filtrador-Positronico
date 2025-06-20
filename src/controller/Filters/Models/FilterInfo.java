@@ -3,40 +3,66 @@ package src.controller.Filters.Models;
 public class FilterInfo {
 
     private boolean useFlow = true; // Whether or not to use the flow difference of gaussians or not.
-    private double sigmaC = 0.1f; // Adjust standard deviation for blurring of the structure tensor. values range
-                                  // from
-                                  // 0.0f to 5.0f.
-    private double sigmaM = 60.5f; // Adjust standard deviation for smoothing of the flow difference of gaussians.
-                                   // values
-                                   // range from 0.0f to 20.0f.
+                                    // Default is true.
+
+    private double sigmaC = 2f; // Adjust standard deviation for blurring of the structure tensor. values range
+                                // from
+                                // 0.0f to 5.0f.
+                                // Default is 2.0f.
+    private double sigmaM = 2f; // Adjust standard deviation for smoothing of the flow difference of gaussians.
+                                // values
+                                // range from 0.0f to 20.0f.
+                                // Default is 2.0f.
     private double[] lineIntegralStepSize = { 1.0f, 1.0f }; // Increase distance between smoothing samples for more
                                                             // painterly visuals.
+                                                            // Default is 1.0f, 1.0f.
     private boolean calcDiffBeforeConvolving = true; // Calculate Difference Before Smoothing
-    private double sigmaE = 0.1f; // Adjust the deviation of the color buffer gaussian blurring. values range
-                                  // from 0.0f to 10.0f.
-    private double k = 1.4f; // Adjust scale between gaussian blur passes for the color buffer. values range
-                             // from 0.0f to 5.0f.
-    private double p = 0.5f; // Adjust sharpness of the two gaussian blurs to bring out edge lines. values
-                             // range from 0.0f
-                             // to 1.0f.
+                                                     // Default is true.
+    private double sigmaE = 2f; // Adjust the deviation of the color buffer gaussian blurring. values range
+                                // from 0.0f to 10.0f.
+                                // Default is 2.0f.
+    private double k = 0.01f; // Adjust scale between gaussian blur passes for the color buffer. values range
+                              // from 0.0f to 5.0f.
+                              // Default is 1.6f.
+    private double p = 0f; // Adjust sharpness of the two gaussian blurs to bring out edge lines. values
+                           // range from 0.0f to 1.0f.
+                           // Default is 1.0f.
     private boolean smoothEdges = true; // Whether or not to apply anti aliasing to the edges of the image.
+                                        // Default is true.
     private double sigmaA = 2.0f; // Adjust standard deviation for gaussian blurring of edge lines.
+                                  // values range from 0.0f to 10.0f.
+                                  // Default is 2.0f.
     private double[] antiAliasStepSize = { 1.0f, 1.0f }; // Increase distance between smoothing samples for more
                                                          // painterly visuals.
+                                                         // Default is 1.0f, 1.0f.
 
     private int thresholding = 0; // No Threshold, Tanh, Quantization, Soft Quantization
-    private int thresholds = 3; // Adjust number of allowed difference values.
-    private double thresholdingValue = 60.0f; // Adjust value at which difference is clamped to white.
-    private double thresholdingValue2 = 0.0f; // Adjust value at which difference is clamped to white.
-    private double threshold = 20.0f; // Adjust value at which difference is clamped to white.
-    private double phi = 1.0f; // Adjust curve of hyperbolic tangent.
+                                  // default is 0
+    private int thresholds = 100; // Adjust number of allowed difference values.
+                                  // values range from 1 to 16.
+                                  // Default is 1.
+    private double thresholdingValue = .20f; // Adjust value at which difference is clamped to white. values range
+                                             // from 0.0f to 100.0f.
+                                             // Default is 20.0f.
+    private double threshold = 20f; // Adjust value at which difference is clamped to white.
+    private double phi = 1f; // Adjust curve of hyperbolic tangent.
+                             // values range from 0.0f to 10.0f.
+                             // Default is 1.0f.
 
-    private double termStrength = 2f; // Adjust scale of difference of gaussians output. values range from 0.0f to
-                                      // 5.0f.
-    private int blendMode = 2; // No Blend, Interpolate, Two Point Interpolate
-    private double minColor = 0.1f; // Set minimum color.
-    private double maxColor = .5f; // Set maximum color.
-    private double blendStrength = .7f; // Adjust strength of color blending. values range from 0.0f to 1.0f.
+    private double termStrength = .5f; // Adjust scale of difference of gaussians output. values
+                                       // range from 0.0f to 5.0f.
+                                       // Default is 1.0f.
+    private int blendMode = 0; // No Blend, Interpolate, Two Point Interpolate
+                               // Default is 0.
+    private double minColor = 0f; // Set minimum color.
+                                  // Default is 0.0f.
+                                  // values range from 0.0f to 1.0f.
+    private double maxColor = 1f; // Set maximum color.
+                                  // Default is 1.0f.
+                                  // values range from 0.0f to 1.0f.
+    private double blendStrength = .65f; // Adjust strength of color blending. values
+                                         // range from 0.0f to 1.0f.
+                                         // Default is 1.0f.
 
     public boolean isUseFlow() {
         return useFlow;
@@ -166,14 +192,6 @@ public class FilterInfo {
         this.thresholdingValue = thresholdingValue;
     }
 
-    public double getThresholdingValue2() {
-        return thresholdingValue2;
-    }
-
-    public void setThresholdingValue2(float thresholdingValue2) {
-        this.thresholdingValue2 = thresholdingValue2;
-    }
-
     public double getTermStrength() {
         return termStrength;
     }
@@ -255,6 +273,7 @@ public class FilterInfo {
     // Aliasing Settings";ui_label="Edge Smoothing Step
     // Sizes";ui_type="drag";ui_tooltip="Increase distance between smoothing samples
     // for more painterly visuals.";>=1.0f;
+
     // uniform int _Thresholding<ui_category_closed=true;ui_category="Threshold
     // Settings";ui_type="combo";ui_label="Threshold Mode";ui_items="No
     // Threshold\0""Tanh\0""Quantization\0""Soft Quantization\0";>=0;

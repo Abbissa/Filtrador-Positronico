@@ -350,8 +350,8 @@ public class ThreadFilter implements FilterInterface {
 
                     }
                 }
-                gx *= 1.0 / 4.0;
-                gy *= 1.0 / 4.0;
+                // gx *= 1.0 / 4.0;
+                // gy *= 1.0 / 4.0;
 
                 // Calculate gradient magnitude and direction
                 double magnitude = Math.sqrt(gx * gx + gy * gy);
